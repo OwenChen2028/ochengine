@@ -52,15 +52,15 @@ struct Object {
 struct Rect : Object {
     float minX;
     float minY;
-    
+
     float maxX;
     float maxY;
 
     float centerX;
     float centerY;
 
-    Rect(float mass_, float elasticity_, float velocityX_, float velocityY_, 
-         float minX_, float minY_, float maxX_, float maxY_): Object(mass_, elasticity_, velocityX_, velocityY_) {
+    Rect(float mass_, float elasticity_, float velocityX_, float velocityY_,
+        float minX_, float minY_, float maxX_, float maxY_) : Object(mass_, elasticity_, velocityX_, velocityY_) {
         minX = minX_;
         minY = minY_;
 
@@ -78,10 +78,10 @@ struct Circle : Object {
     float posX;
     float posY;
 
-    Circle(float mass_, float elasticity_, float velocityX_, float velocityY_, 
-         float radius_, float posX_, float posY_) : Object(mass_, elasticity_, velocityX_, velocityY_) {
+    Circle(float mass_, float elasticity_, float velocityX_, float velocityY_,
+        float radius_, float posX_, float posY_) : Object(mass_, elasticity_, velocityX_, velocityY_) {
         radius = radius_;
-        
+
         posX = posX_;
         posY = posY_;
     }
@@ -97,6 +97,9 @@ struct Collision {
     Collision(Object* o1_, Object* o2_) {
         o1 = o1_;
         o2 = o2_;
+        
+        normalX = 0;
+        normalY = 0;
     }
 };
 
@@ -128,7 +131,7 @@ bool CheckRectRectCol(Collision* col) {
             else {
                 col->normalX = 0;
                 col->normalY = sign(dispY);
-                
+
                 return true;
             }
         }
@@ -200,12 +203,12 @@ bool CheckRectCircleCol(Collision* col) {
     }
 
     if (inside) {
-        col->normalX = -1 * normalX;
-        col->normalY = -1 * normalY;
+        col->normalX = -1 * normalX / sqrt(normalSquared);
+        col->normalY = -1 * normalY / sqrt(normalSquared);
     }
     else {
-        col->normalX = normalX;
-        col->normalY = normalY;
+        col->normalX = normalX / sqrt(normalSquared);
+        col->normalY = normalY / sqrt(normalSquared);
     }
 
     return true;
@@ -236,55 +239,4 @@ void ResolveCollision(Collision* col) {
 
     o2->velocityX += o2->invMass * impulse * normalX;
     o2->velocityY += o2->invMass * impulse * normalY;
-}
-
-#include <iostream>
-
-int main() {
-    Object* o1 = new Circle(1.0f, 1.0f, 2.0f, 0.0f, 5.0f, 0.0f, 0.0f);
-    Object* o2 = new Circle(1.0f, 1.0f, -1.0f, 0.0f, 5.0f, 10.0f, 0.0f);
-    Collision* col = new Collision(o1, o2);
-
-    if (CheckCircleCircleCol(col)) {
-        std::cout << "Rect-Rect Col Detected" << "\n";
-        ResolveCollision(col);
-    }
-
-    std::cout << "Circle 1 Velocity: (" << o1->velocityX << ", " << o1->velocityY << ")\n";
-    std::cout << "Circle 2 Velocity: (" << o2->velocityX << ", " << o2->velocityY << ")\n";
-
-    delete o1;
-    delete o2;
-    delete col;
-
-    o1 = new Rect(1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 2.0f, 2.0f);
-    o2 = new Rect(1.0f, 1.0f, -1.0f, 0.0f, 2.0f, 0.0f, 4.0f, 2.0f);
-    col = new Collision(o1, o2);
-
-    if (CheckRectRectCol(col)) {
-        std::cout << "Rect-Rect Col Detected" << "\n";
-        ResolveCollision(col);
-    }
-
-    std::cout << "Rectangle 1 Velocity: (" << o1->velocityX << ", " << o1->velocityY << ")\n";
-    std::cout << "Rectangle 2 Velocity: (" << o2->velocityX << ", " << o2->velocityY << ")\n";
-
-    delete o1;
-    delete o2;
-    delete col;
-
-    o1 = new Rect(1.0f, 1.0f, -1.0f, 0.0f, 6.0f, 4.0f, 8.0f, 6.0f);
-    o2 = new Circle(1.0f, 1.0f, 2.0f, 0.0f, 1.0f, 5.0f, 5.0f);
-    col = new Collision(o1, o2);
-
-    if (CheckRectCircleCol(col)) {
-        std::cout << "Rect-Circle Col Detected" << "\n";
-        ResolveCollision(col);
-    }
-    std::cout << "Object 1 Velocity: (" << o1->velocityX << ", " << o1->velocityY << ")\n";
-    std::cout << "Object 2 Velocity: (" << o2->velocityX << ", " << o2->velocityY << ")\n";
-
-    delete o1;
-    delete o2;
-    delete col;
 }
