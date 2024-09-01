@@ -110,20 +110,16 @@ struct Scene {
 		window.display();
 	}
 
-	void SimulatePhysics(float duration, bool deltaTime) {
+	void SimulatePhysics(float duration, bool deterministic) {
 		sf::Clock clock;
 
 		float elapsedTime = 0.0f;
 
+		float accumulatedTime = 0.0f;
+		float timeStep = 1.0f / updateFreq;
+
 		while (elapsedTime <= duration || duration == 0) { // 0 for indefinite duration
 			sf::Time dt = clock.restart();
-			
-			if (deltaTime) {
-				elapsedTime += dt.asSeconds();
-			}
-			else {
-				elapsedTime += 1.0f / updateFreq;
-			}
 
 			if (rendering) {
 				HandleRendering();
@@ -140,14 +136,27 @@ struct Scene {
 				}
 			}
 
-			if (deltaTime) {
-				HandleUpdates(dt.asSeconds()); // dt is not deterministic
+			if (!deterministic) {
+				HandleUpdates(dt.asSeconds());
+				HandleCollisions();
+
+				elapsedTime += dt.asSeconds();
 			}
 			else {
-				HandleUpdates(1.0f / updateFreq);
+				accumulatedTime += dt.asSeconds();
+
+				while (accumulatedTime >= timeStep) {
+					std::cout << accumulatedTime << " " << timeStep << std::endl;
+
+					HandleUpdates(timeStep);
+					HandleCollisions();
+
+					accumulatedTime -= timeStep;
+					elapsedTime += timeStep;
+				}
 			}
 
-			HandleCollisions();
+			
 		}
 	}
 };

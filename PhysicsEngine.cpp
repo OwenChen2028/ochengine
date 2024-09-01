@@ -19,7 +19,7 @@ int main() {
     scene1->objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 10.0f, 600.0f)); // left boundary
     scene1->objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 790.0f, 0.0f, 800.0f, 600.0f)); // right boundary
 
-    scene1->SimulatePhysics(0.0f, false);
+    scene1->SimulatePhysics(0.0f, true);
 
     return 0;
 }
