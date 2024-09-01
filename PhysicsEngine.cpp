@@ -1,242 +1,25 @@
-#include <cmath>
+#include "ScenesNRendering.h"
 
-float min(float a, float b) {
-    return (a < b) ? a : b;
-}
+#include <iostream>
 
-float max(float a, float b) {
-    return (a > b) ? a : b;
-}
+int main() {
+    Scene* scene1 = new Scene(60, true);
 
-float sign(float x) {
-    return (x >= 0) ? 1.0f : -1.0f;
-}
+    scene1->objects.push_back(new Circle(1.0f, 1.0f, 500.0f, 200.0f, 25, 100.0f, 100.0f));
+    scene1->objects.push_back(new Circle(1.0f, 1.0f, -200.0f, -500.0f, 25.0f, 100.0f, 100.0f));
 
-float square(float val) {
-    return val * val;
-}
+    scene1->objects.push_back(new Rect(1.0f, 1.0f, -400.0f, 0.0f, 250.0f, 250.0f, 350.0f, 300.0f));
+    scene1->objects.push_back(new Rect(1.0f, 1.0f, 400.0f, 0.0f, 250.0f, 250.0f, 350.0f, 300.0f));
 
-float dot(float x1, float y1, float x2, float y2) {
-    return x1 * x2 + y1 * y2;
-}
+    scene1->objects.push_back(new Rect(1.0f, 1.0f, -100.0f, 0.0f, 350.0f, 350.0f, 450.0f, 450.0f));
+    scene1->objects.push_back(new Circle(1.0f, 1.0f, 100.0f, 0.0f, 50.0f, 400.0f, 400.0f));
 
-float clamp(float val, float minVal, float maxVal) {
-    return max(minVal, min(val, maxVal));
-}
+    scene1->objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 800.0f, 10.0f)); // top boundary
+    scene1->objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 590.0f, 800.0f, 600.0f)); // bottom boundary
+    scene1->objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 10.0f, 600.0f)); // left boundary
+    scene1->objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 790.0f, 0.0f, 800.0f, 600.0f)); // right boundary
 
-struct Object {
-    float mass;
-    float elasticity;
+    scene1->SimulatePhysics(0.0f, false);
 
-    float velocityX;
-    float velocityY;
-
-    float invMass;
-
-    Object(float mass_, float elasticity_, float velocityX_, float velocityY_) {
-        mass = mass_;
-        elasticity = elasticity_;
-
-        velocityX = velocityX_;
-        velocityY = velocityY_;
-
-        if (mass != 0) {
-            invMass = 1 / mass;
-        }
-        else {
-            invMass = 0;
-        }
-    }
-};
-
-struct Rect : Object {
-    float minX;
-    float minY;
-
-    float maxX;
-    float maxY;
-
-    float centerX;
-    float centerY;
-
-    Rect(float mass_, float elasticity_, float velocityX_, float velocityY_,
-        float minX_, float minY_, float maxX_, float maxY_) : Object(mass_, elasticity_, velocityX_, velocityY_) {
-        minX = minX_;
-        minY = minY_;
-
-        maxX = maxX_;
-        maxY = maxY_;
-
-        centerX = (minX + maxX) / 2;
-        centerY = (minY + maxY) / 2;
-    }
-};
-
-struct Circle : Object {
-    float radius;
-
-    float posX;
-    float posY;
-
-    Circle(float mass_, float elasticity_, float velocityX_, float velocityY_,
-        float radius_, float posX_, float posY_) : Object(mass_, elasticity_, velocityX_, velocityY_) {
-        radius = radius_;
-
-        posX = posX_;
-        posY = posY_;
-    }
-};
-
-struct Collision {
-    Object* o1;
-    Object* o2;
-
-    float normalX;
-    float normalY;
-
-    Collision(Object* o1_, Object* o2_) {
-        o1 = o1_;
-        o2 = o2_;
-        
-        normalX = 0;
-        normalY = 0;
-    }
-};
-
-bool CheckRectRectCol(Collision* col) {
-    Rect* r1 = static_cast<Rect*>(col->o1);
-    Rect* r2 = static_cast<Rect*>(col->o2);
-
-    float dispX = r2->centerX - r1->centerX;
-    float dispY = r2->centerY - r1->centerY;
-
-    float r1EdgeX = r1->maxX - r1->minX;
-    float r2EdgeX = r2->maxX - r2->minX;
-
-    float overlapX = r1EdgeX / 2 + r2EdgeX / 2 - abs(dispX);
-
-    if (overlapX >= 0) {
-        float r1EdgeY = r1->maxY - r1->minY;
-        float r2EdgeY = r2->maxY - r2->minY;
-
-        float overlapY = r1EdgeY / 2 + r2EdgeY / 2 - abs(dispY);
-
-        if (overlapY >= 0) {
-            if (overlapX < overlapY) {
-                col->normalX = sign(dispX);
-                col->normalY = 0;
-
-                return true;
-            }
-            else {
-                col->normalX = 0;
-                col->normalY = sign(dispY);
-
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-bool CheckCircleCircleCol(Collision* col) {
-    Circle* c1 = static_cast<Circle*>(col->o1);
-    Circle* c2 = static_cast<Circle*>(col->o2);
-
-    float dispX = c2->posX - c1->posX;
-    float dispY = c2->posY - c1->posY;
-
-    float rSquared = square(c1->radius + c2->radius);
-    float dispSquared = square(dispX) + square(dispY);
-
-    if (dispSquared > rSquared) {
-        return false;
-    }
-
-    if (dispSquared != 0) {
-        col->normalX = dispX / sqrt(dispSquared);
-        col->normalY = dispY / sqrt(dispSquared);
-    }
-    else {
-        col->normalX = 1;
-        col->normalY = 0;
-    }
-
-    return true;
-}
-
-bool CheckRectCircleCol(Collision* col) {
-    Rect* r1 = static_cast<Rect*>(col->o1);
-    Circle* c2 = static_cast<Circle*>(col->o2);
-
-    float dispX = c2->posX - r1->centerX;
-    float dispY = c2->posY - r1->centerY;
-
-    float r1EdgeX = r1->maxX - r1->minX;
-    float r1EdgeY = r1->maxY - r1->minY;
-
-    float closestX = clamp(dispX, -1 * r1EdgeX / 2, r1EdgeX / 2);
-    float closestY = clamp(dispY, -1 * r1EdgeY / 2, r1EdgeY / 2);
-
-    bool inside = false;
-
-    if (dispX == closestX && dispY == closestY) {
-        if (abs(dispX) > abs(dispY)) {
-            closestX = sign(closestX) * r1EdgeX / 2;
-        }
-        else {
-            closestY = sign(closestY) * r1EdgeY / 2;
-        }
-
-        inside = true;
-    }
-
-    float normalX = dispX - closestX;
-    float normalY = dispY - closestY;
-
-    float radius = c2->radius;
-    float normalSquared = square(normalX) + square(normalY);
-
-    if (normalSquared > square(radius) && !inside) {
-        return false;
-    }
-
-    if (inside) {
-        col->normalX = -1 * normalX / sqrt(normalSquared);
-        col->normalY = -1 * normalY / sqrt(normalSquared);
-    }
-    else {
-        col->normalX = normalX / sqrt(normalSquared);
-        col->normalY = normalY / sqrt(normalSquared);
-    }
-
-    return true;
-}
-
-void ResolveCollision(Collision* col) {
-    Object* o1 = col->o1;
-    Object* o2 = col->o2;
-
-    float relVelocityX = o2->velocityX - o1->velocityX;
-    float relVelocityY = o2->velocityY - o1->velocityY;
-
-    float normalX = col->normalX;
-    float normalY = col->normalY;
-
-    float normalVelocity = dot(relVelocityX, relVelocityY, normalX, normalY);
-
-    if (normalVelocity > 0) {
-        return;
-    }
-
-    float minElasticity = min(o1->elasticity, o2->elasticity);
-
-    float impulse = (-1 * (1 + minElasticity) * normalVelocity) / (o1->invMass + o2->invMass);
-
-    o1->velocityX -= o1->invMass * impulse * normalX;
-    o1->velocityY -= o1->invMass * impulse * normalY;
-
-    o2->velocityX += o2->invMass * impulse * normalX;
-    o2->velocityY += o2->invMass * impulse * normalY;
+    return 0;
 }
