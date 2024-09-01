@@ -135,19 +135,11 @@ struct Scene {
 					return;
 				}
 			}
-
-			if (!deterministic) {
-				HandleUpdates(dt.asSeconds());
-				HandleCollisions();
-
-				elapsedTime += dt.asSeconds();
-			}
-			else {
+			
+			if (deterministic) {
 				accumulatedTime += dt.asSeconds();
 
 				while (accumulatedTime >= timeStep) {
-					std::cout << accumulatedTime << " " << timeStep << std::endl;
-
 					HandleUpdates(timeStep);
 					HandleCollisions();
 
@@ -155,8 +147,12 @@ struct Scene {
 					elapsedTime += timeStep;
 				}
 			}
+			else {
+				HandleUpdates(dt.asSeconds());
+				HandleCollisions();
 
-			
+				elapsedTime += dt.asSeconds();
+			}
 		}
 	}
 };

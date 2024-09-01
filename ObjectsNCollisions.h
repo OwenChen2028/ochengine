@@ -53,6 +53,9 @@ struct Object {
     int shape;
     float invMass;
 
+    float forceX;
+    float forceY;
+
     Object(float mass_, float restitution_, float velocityX_, float velocityY_, int shape_) {
         mass = mass_;
         restitution = restitution_;
@@ -68,6 +71,9 @@ struct Object {
         }
 
         shape = shape_; // 1 for rect, 2 for circle
+
+        forceX = 0.0f;
+        forceY = 0.0f;
     }
 
     virtual void Update(float dt) = 0;
@@ -98,11 +104,17 @@ struct Rect : Object {
     }
 
     void Update(float dt) override {
+        velocityX += invMass * forceX * dt;
+        velocityY += invMass * forceY * dt;
+
         minX += velocityX * dt;
         maxX += velocityX * dt;
         
         minY += velocityY * dt;
         maxY += velocityY * dt;
+
+        forceX = 0.0f;
+        forceY = 0.0f;
     }
 };
 
@@ -121,8 +133,14 @@ struct Circle : Object {
     }
 
     void Update(float dt) override {
+        velocityX += invMass * forceX * dt;
+        velocityY += invMass * forceY * dt;
+
         posX += velocityX * dt;
         posY += velocityY * dt;
+
+        forceX = 0.0f;
+        forceY = 0.0f;
     }
 };
 

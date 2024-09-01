@@ -5,7 +5,7 @@
 int main() {
     Scene* scene1 = new Scene(60, true);
 
-    scene1->objects.push_back(new Circle(1.0f, 1.0f, 500.0f, 200.0f, 25, 100.0f, 100.0f));
+    scene1->objects.push_back(new Circle(1.0f, 1.0f, 200.0f, 500.0f, 25, 100.0f, 100.0f));
     scene1->objects.push_back(new Circle(1.0f, 1.0f, -200.0f, -500.0f, 25.0f, 100.0f, 100.0f));
 
     scene1->objects.push_back(new Rect(1.0f, 1.0f, -400.0f, 0.0f, 250.0f, 250.0f, 350.0f, 300.0f));
