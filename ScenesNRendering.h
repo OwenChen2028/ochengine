@@ -23,9 +23,9 @@ struct Scene {
 		}
 	}
 
-	void HandleUpdates(float dt) {
+	void HandleUpdates(float dt, int method) {
 		for (int i = 0; i < objects.size(); i++) {
-			objects[i]->Update(dt);
+			objects[i]->Update(dt, method);
 		}
 	}
 
@@ -114,7 +114,7 @@ struct Scene {
 		window.display();
 	}
 
-	void SimulatePhysics(float duration, bool deterministic) {
+	void SimulatePhysics(float duration, bool deterministic, int method) {
 		sf::Clock clock;
 
 		float elapsedTime = 0.0f;
@@ -144,7 +144,7 @@ struct Scene {
 				accumulatedTime += dt.asSeconds();
 
 				while (accumulatedTime >= timeStep) {
-					HandleUpdates(timeStep);
+					HandleUpdates(timeStep, method);
 					HandleCollisions();
 
 					accumulatedTime -= timeStep;
@@ -152,7 +152,7 @@ struct Scene {
 				}
 			}
 			else {
-				HandleUpdates(dt.asSeconds());
+				HandleUpdates(dt.asSeconds(), method);
 				HandleCollisions();
 
 				elapsedTime += dt.asSeconds();
