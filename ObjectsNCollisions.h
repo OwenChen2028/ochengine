@@ -85,7 +85,60 @@ struct Object {
 
     virtual void Move(float dx, float dy) = 0;
 
-    virtual void Update(float dt) = 0;
+    void Update(float dt) {
+        forceY += gravity;
+
+        float k1_vX = invMass * forceX; // initial derivatives
+        float k1_vY = invMass * forceY;
+        float k1_posX = velocityX;
+        float k1_posY = velocityY;
+
+        float halfDt = dt / 2.0f;
+
+        float temp_vX = velocityX + k1_vX * halfDt; // temporary values at midpoint
+        float temp_vY = velocityY + k1_vY * halfDt;
+        float temp_posX = GetCenterX() + k1_posX * halfDt;
+        float temp_posY = GetCenterY() + k1_posY * halfDt;
+
+        float temp_forceX = forceX; // forces stay same
+        float temp_forceY = forceY;
+
+        float k2_vX = invMass * temp_forceX; // derivatives at midpoint
+        float k2_vY = invMass * temp_forceY;
+        float k2_posX = temp_vX;
+        float k2_posY = temp_vY;
+
+        temp_vX = velocityX + k2_vX * halfDt;
+        temp_vY = velocityY + k2_vY * halfDt;
+        temp_posX = GetCenterX() + k2_posX * halfDt;
+        temp_posY = GetCenterY() + k2_posY * halfDt;
+
+        temp_forceX = forceX;
+        temp_forceY = forceY;
+
+        float k3_vX = invMass * temp_forceX; // refined derivatives at midpoint
+        float k3_vY = invMass * temp_forceY;
+        float k3_posX = temp_vX;
+        float k3_posY = temp_vY;
+
+        temp_vX = velocityX + k3_vX * dt;
+        temp_vY = velocityY + k3_vY * dt;
+        temp_posX = GetCenterX() + k3_posX * dt;
+        temp_posY = GetCenterY() + k3_posY * dt;
+
+        float k4_vX = invMass * forceX; // derivatives at endpoint
+        float k4_vY = invMass * forceY;
+        float k4_posX = temp_vX;
+        float k4_posY = temp_vY;
+
+        Move(dt / 6.0f * (k1_posX + 2 * k2_posX + 2 * k3_posX + k4_posX), dt / 6.0f * (k1_posY + 2 * k2_posY + 2 * k3_posY + k4_posY));
+
+        velocityX += dt / 6.0f * (k1_vX + 2 * k2_vX + 2 * k3_vX + k4_vX);
+        velocityY += dt / 6.0f * (k1_vY + 2 * k2_vY + 2 * k3_vY + k4_vY);
+
+        forceX = 0.0f;
+        forceY = 0.0f;
+    };
 };
 
 struct Rect : Object {
@@ -119,22 +172,6 @@ struct Rect : Object {
         minY += dy;
         maxY += dy;
     }
-
-    void Update(float dt) override {
-        forceY += gravity * dt;
-
-        velocityX += invMass * forceX * dt;
-        velocityY += invMass * forceY * dt;
-
-        minX += velocityX * dt;
-        maxX += velocityX * dt;
-        
-        minY += velocityY * dt;
-        maxY += velocityY * dt;
-
-        forceX = 0.0f;
-        forceY = 0.0f;
-    }
 };
 
 struct Circle : Object {
@@ -163,19 +200,6 @@ struct Circle : Object {
         posX += dx;
         posY += dy;
     }
-
-    void Update(float dt) override {
-        forceY += gravity * dt;
-
-        velocityX += invMass * forceX * dt;
-        velocityY += invMass * forceY * dt;
-
-        posX += velocityX * dt;
-        posY += velocityY * dt;
-
-        forceX = 0.0f;
-        forceY = 0.0f;
-    }
 };
 
 struct Collision {
@@ -185,12 +209,16 @@ struct Collision {
     float normalX;
     float normalY;
 
+    float penetration;
+
     Collision(Object* o1_, Object* o2_) {
         o1 = o1_;
         o2 = o2_;
         
         normalX = 0;
         normalY = 0;
+
+        penetration = 0;
     }
 };
 
@@ -217,11 +245,15 @@ bool CheckRectRectCol(Collision* col) {
                 col->normalX = FindSign(dispX);
                 col->normalY = 0;
 
+                col->penetration = overlapX;
+
                 return true;
             }
             else {
                 col->normalX = 0;
                 col->normalY = FindSign(dispY);
+
+                col->penetration = overlapY;
 
                 return true;
             }
@@ -246,12 +278,18 @@ bool CheckCircleCircleCol(Collision* col) {
     }
 
     if (dispSquared != 0) {
-        col->normalX = dispX / FindSqrt(dispSquared);
-        col->normalY = dispY / FindSqrt(dispSquared);
+        float dispMagnitude = FindSqrt(dispSquared);
+
+        col->normalX = dispX / dispMagnitude;
+        col->normalY = dispY / dispMagnitude;
+
+        col->penetration = c1->radius + c2->radius - dispMagnitude;
     }
     else {
         col->normalX = 1;
         col->normalY = 0;
+
+        col->penetration = FindMin(c1->radius, c2->radius);
     }
 
     return true;
@@ -295,17 +333,27 @@ bool CheckRectCircleCol(Collision* col) {
 
     if (inside) {
         if (normalSquared != 0) {
-            col->normalX = -1 * normalX / FindSqrt(normalSquared);
-            col->normalY = -1 * normalY / FindSqrt(normalSquared);
+            float normalMagnitude = FindSqrt(normalSquared);
+
+            col->normalX = -1 * normalX / normalMagnitude;
+            col->normalY = -1 * normalY / normalMagnitude;
+
+            col->penetration = c2->radius - normalMagnitude;
         }
         else {
             col->normalX = 1;
             col->normalY = 0;
+
+            col->penetration = c2->radius;
         }
     }
     else {
-        col->normalX = normalX / FindSqrt(normalSquared);
-        col->normalY = normalY / FindSqrt(normalSquared);
+        float normalMagnitude = FindSqrt(normalSquared);
+
+        col->normalX = normalX / normalMagnitude;
+        col->normalY = normalY / normalMagnitude;
+
+        col->penetration = c2->radius - normalMagnitude;
     }
 
     return true;
@@ -333,11 +381,31 @@ void ResolveCollision(Collision* col) {
 
     float minRestitution = FindMin(o1->restitution, o2->restitution);
 
-    float impulse = (-1 * (1 + minRestitution) * normalVelocity) / (o1->invMass + o2->invMass);
+    float impulseMagnitude = (-1 * (1 + minRestitution) * normalVelocity) / (o1->invMass + o2->invMass);
 
-    o1->velocityX -= o1->invMass * impulse * normalX;
-    o1->velocityY -= o1->invMass * impulse * normalY;
+    o1->velocityX -= o1->invMass * impulseMagnitude * normalX;
+    o1->velocityY -= o1->invMass * impulseMagnitude * normalY;
 
-    o2->velocityX += o2->invMass * impulse * normalX;
-    o2->velocityY += o2->invMass * impulse * normalY;
+    o2->velocityX += o2->invMass * impulseMagnitude * normalX;
+    o2->velocityY += o2->invMass * impulseMagnitude * normalY;
+}
+
+void CorrectPositions(Collision* col) {
+    Object* o1 = col->o1;
+    Object* o2 = col->o2;
+
+    if (o1->invMass == 0 && o2->invMass == 0) {
+        return;
+    }
+
+    float correctionFactor = 0.2f;
+    float correctionThreshold = 0.01f;
+
+    float correctionMagnitude = correctionFactor * FindMax(col->penetration - correctionThreshold, 0.0f) / (o1->invMass + o2->invMass);
+
+    float correctionX = correctionMagnitude * col->normalX;
+    float correctionY = correctionMagnitude * col->normalY;
+    
+    o1->Move(-1 * o1->invMass * correctionX, -1 * o1->invMass * correctionY);
+    o2->Move(o2->invMass * correctionX, o2->invMass * correctionY);
 }

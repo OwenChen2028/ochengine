@@ -38,6 +38,7 @@ struct Scene {
 
 						if (CheckRectRectCol(col)) {
 							ResolveCollision(col);
+							CorrectPositions(col);
 						}
 
 						delete col;
@@ -47,6 +48,7 @@ struct Scene {
 
 						if (CheckRectCircleCol(col)) {
 							ResolveCollision(col);
+							CorrectPositions(col);
 						}
 
 						delete col;
@@ -58,6 +60,7 @@ struct Scene {
 
 						if (CheckRectCircleCol(col)) {
 							ResolveCollision(col);
+							CorrectPositions(col);
 						}
 
 						delete col;
@@ -67,6 +70,7 @@ struct Scene {
 
 						if (CheckCircleCircleCol(col)) {
 							ResolveCollision(col);
+							CorrectPositions(col);
 						}
 
 						delete col;
