@@ -50,18 +50,22 @@ struct Object {
     float velocityX;
     float velocityY;
 
+    float gravity;
+
     int shape;
     float invMass;
 
     float forceX;
     float forceY;
 
-    Object(float mass_, float restitution_, float velocityX_, float velocityY_, int shape_) {
+    Object(float mass_, float restitution_, float velocityX_, float velocityY_, float gravity_, int shape_) {
         mass = mass_;
         restitution = restitution_;
 
         velocityX = velocityX_;
         velocityY = velocityY_;
+
+        gravity = gravity_;
 
         if (mass != 0) {
             invMass = 1 / mass;
@@ -76,6 +80,11 @@ struct Object {
         forceY = 0.0f;
     }
 
+    virtual float GetCenterX() = 0;
+    virtual float GetCenterY() = 0;
+
+    virtual void Move(float dx, float dy) = 0;
+
     virtual void Update(float dt) = 0;
 };
 
@@ -86,8 +95,8 @@ struct Rect : Object {
     float maxX;
     float maxY;
 
-    Rect(float mass_, float restitution_, float velocityX_, float velocityY_,
-        float minX_, float minY_, float maxX_, float maxY_) : Object(mass_, restitution_, velocityX_, velocityY_, 1) {
+    Rect(float mass_, float restitution_, float velocityX_, float velocityY_, float gravity_,
+        float minX_, float minY_, float maxX_, float maxY_) : Object(mass_, restitution_, velocityX_, velocityY_, gravity_, 1) {
         minX = minX_;
         minY = minY_;
 
@@ -95,15 +104,25 @@ struct Rect : Object {
         maxY = maxY_;
     }
 
-    float GetCenterX() {
+    float GetCenterX() override {
         return (minX + maxX) / 2;
     }
 
-    float GetCenterY() {
+    float GetCenterY() override {
         return (minY + maxY) / 2;
     }
 
+    void Move(float dx, float dy) override {
+        minX += dx;
+        maxX += dx;
+
+        minY += dy;
+        maxY += dy;
+    }
+
     void Update(float dt) override {
+        forceY += gravity * dt;
+
         velocityX += invMass * forceX * dt;
         velocityY += invMass * forceY * dt;
 
@@ -124,15 +143,30 @@ struct Circle : Object {
     float posX;
     float posY;
 
-    Circle(float mass_, float restitution_, float velocityX_, float velocityY_,
-        float radius_, float posX_, float posY_) : Object(mass_, restitution_, velocityX_, velocityY_, 2) {
+    Circle(float mass_, float restitution_, float velocityX_, float velocityY_, float gravity_,
+        float radius_, float posX_, float posY_) : Object(mass_, restitution_, velocityX_, velocityY_, gravity_, 2) {
         radius = radius_;
 
         posX = posX_;
         posY = posY_;
     }
 
+    float GetCenterX() override {
+        return posX;
+    }
+
+    float GetCenterY() override {
+        return posY;
+    }
+
+    void Move(float dx, float dy) override {
+        posX += dx;
+        posY += dy;
+    }
+
     void Update(float dt) override {
+        forceY += gravity * dt;
+
         velocityX += invMass * forceX * dt;
         velocityY += invMass * forceY * dt;
 
