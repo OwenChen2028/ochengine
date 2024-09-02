@@ -1,7 +1,5 @@
 #include "ScenesNRendering.h"
 
-#include <iostream>
-
 int main() {
     Scene* scene1 = new Scene(60, true);
 
