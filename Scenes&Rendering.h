@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 
 struct Scene {
-	std::vector<Object*> objects; // todo: broad phase collision detection w/ diff data structure
+	std::vector<Object*> objects; // todo: use diff data structure (e.g. quadtree)
 
 	Scene(std::vector<Object*> objects_) {
 		objects = objects_;

@@ -58,5 +58,18 @@ int main() {
         game->PlayScene(sceneIndex, "rk4", true);
     }
 
+    for (int i = 0; i < scene1->objects.size(); i++) {
+        delete scene1->objects[i];
+    }
+
+    for (int i = 0; i < scene2->objects.size(); i++) {
+        delete scene2->objects[i];
+    }
+
+    delete scene1;
+    delete scene2;
+
+    delete game;
+
     return 0;
 }
