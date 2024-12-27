@@ -94,7 +94,7 @@ struct Object {
 
             Move(velocityX * dt, velocityY * dt);
         }
-        else if (method == 2){
+        else if (method == 2) {
             float k1_vX = invMass * forceX; // initial derivatives
             float k1_vY = invMass * forceY;
             float k1_posX = velocityX;
@@ -222,7 +222,7 @@ struct Collision {
     Collision(Object* o1_, Object* o2_) {
         o1 = o1_;
         o2 = o2_;
-        
+
         normalX = 0;
         normalY = 0;
 
@@ -371,8 +371,19 @@ void ResolveCollision(Collision* col) {
     Object* o1 = col->o1;
     Object* o2 = col->o2;
 
-    if (o1->invMass == 0 && o2->invMass == 0) {
-        return;
+    float tempInvMass1 = o1->invMass;
+    float tempInvMass2 = o2->invMass;
+
+    if (o1->invMass == 0 && o2->invMass == 0) { // two infinite mass objects collide
+        if (o1->velocityX != 0 || o1->velocityY != 0) {
+            tempInvMass1 = 1.0f;
+        }
+        else if (o2->velocityX != 0 || o2->velocityY != 0) {
+            tempInvMass2 = 1.0f;
+        }
+        else {
+            return;
+        }
     }
 
     float relVelocityX = o2->velocityX - o1->velocityX;
@@ -389,31 +400,42 @@ void ResolveCollision(Collision* col) {
 
     float minRestitution = FindMin(o1->restitution, o2->restitution);
 
-    float impulseMagnitude = (-1 * (1 + minRestitution) * normalVelocity) / (o1->invMass + o2->invMass);
+    float impulseMagnitude = (-1 * (1 + minRestitution) * normalVelocity) / (tempInvMass1 + tempInvMass2);
 
-    o1->velocityX -= o1->invMass * impulseMagnitude * normalX;
-    o1->velocityY -= o1->invMass * impulseMagnitude * normalY;
+    o1->velocityX -= tempInvMass1 * impulseMagnitude * normalX;
+    o1->velocityY -= tempInvMass1 * impulseMagnitude * normalY;
 
-    o2->velocityX += o2->invMass * impulseMagnitude * normalX;
-    o2->velocityY += o2->invMass * impulseMagnitude * normalY;
+    o2->velocityX += tempInvMass2 * impulseMagnitude * normalX;
+    o2->velocityY += tempInvMass2 * impulseMagnitude * normalY;
 }
 
 void CorrectPositions(Collision* col) {
     Object* o1 = col->o1;
     Object* o2 = col->o2;
 
-    if (o1->invMass == 0 && o2->invMass == 0) {
-        return;
+    float tempInvMass1 = o1->invMass;
+    float tempInvMass2 = o2->invMass;
+
+    if (o1->invMass == 0 && o2->invMass == 0) { // two infinite mass objects collide
+        if (o1->velocityX != 0 || o1->velocityY != 0) {
+            tempInvMass1 = 1.0f;
+        }
+        else if (o2->velocityX != 0 || o2->velocityY != 0) {
+            tempInvMass2 = 1.0f;
+        }
+        else {
+            return;
+        }
     }
 
     float correctionFactor = 0.2f;
     float correctionThreshold = 0.01f;
 
-    float correctionMagnitude = correctionFactor * FindMax(col->penetration - correctionThreshold, 0.0f) / (o1->invMass + o2->invMass);
+    float correctionMagnitude = correctionFactor * FindMax(col->penetration - correctionThreshold, 0.0f) / (tempInvMass1 + tempInvMass2);
 
     float correctionX = correctionMagnitude * col->normalX;
     float correctionY = correctionMagnitude * col->normalY;
-    
-    o1->Move(-1 * o1->invMass * correctionX, -1 * o1->invMass * correctionY);
-    o2->Move(o2->invMass * correctionX, o2->invMass * correctionY);
+
+    o1->Move(-1 * tempInvMass1 * correctionX, -1 * tempInvMass1 * correctionY);
+    o2->Move(tempInvMass2 * correctionX, tempInvMass2 * correctionY);
 }
