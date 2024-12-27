@@ -10,7 +10,7 @@ struct Scene {
 		objects = objects_;
 	}
 
-	void HandleUpdates(float dt, int method) {
+	void HandleUpdates(float dt, const char* method) {
 		for (int i = 0; i < objects.size(); i++) {
 			objects[i]->Update(dt, method);
 		}
@@ -22,15 +22,15 @@ struct Scene {
 				Collision* col = NULL;
 				bool collision = false;
 
-				if (objects[i]->shape == 1) {
-					if (objects[j]->shape == 1) { // rect and rect
+				if (objects[i]->shape == "rect") {
+					if (objects[j]->shape == "rect") {
 						col = new Collision(objects[i], objects[j]);
 
 						if (CheckRectRectCol(col)) {
 							collision = true;
 						}
 					}
-					else if (objects[j]->shape == 2) { // rect and circle
+					else if (objects[j]->shape == "circle") {
 						col = new Collision(objects[i], objects[j]);
 
 						if (CheckRectCircleCol(col)) {
@@ -38,15 +38,15 @@ struct Scene {
 						}
 					}
 				}
-				else if (objects[i]->shape == 2) {
-					if (objects[j]->shape == 1) { // circle and rect
+				else if (objects[i]->shape == "circle") {
+					if (objects[j]->shape == "rect") {
 						col = new Collision(objects[j], objects[i]); // swap to rect and circle
 
 						if (CheckRectCircleCol(col)) {
 							collision = true;
 						}
 					}
-					else if (objects[j]->shape == 2) { // circle and circle
+					else if (objects[j]->shape == "circle") {
 						col = new Collision(objects[i], objects[j]);
 
 						if (CheckCircleCircleCol(col)) {
@@ -68,29 +68,35 @@ struct Scene {
 	}
 };
 
-struct Display {
+struct Game {
 	sf::RenderWindow window;
+
+	const char* windowName;
 
 	int windowWidth;
 	int windowHeight;
 
 	int updateFreq;
 
-	Scene* scene;
+	std::vector<Scene*> scenes;
 
-	Display(const char* windowName, int windowWidth_, int windowHeight_, int updateFreq_, Scene* scene_) {
+	Game(const char* windowName_, int windowWidth_, int windowHeight_, int updateFreq_, std::vector<Scene*> scenes_) {
+		windowName = windowName_;
+		
 		windowWidth = windowWidth_;
 		windowHeight = windowHeight_;
 
 		updateFreq = updateFreq_;
 
-		scene = scene_;
+		scenes = scenes_;
+	}
 
+	void OpenWindow() {
 		window.create(sf::VideoMode(windowWidth, windowHeight), windowName);
 		window.setFramerateLimit(updateFreq);
 	}
 
-	void DrawObjects() {
+	void DrawObjects(int sceneIndex) {
 		if (!window.isOpen()) {
 			return;
 		}
@@ -100,9 +106,9 @@ struct Display {
 		sf::RectangleShape rectShape;
 		sf::CircleShape circleShape;
 
-		for (int i = 0; i < scene->objects.size(); i++) {
-			if (scene->objects[i]->shape == 1) { // rect
-				Rect* rect = static_cast<Rect*>(scene->objects[i]);
+		for (int i = 0; i < scenes[sceneIndex]->objects.size(); i++) {
+			if (scenes[sceneIndex]->objects[i]->shape == "rect") {
+				Rect* rect = static_cast<Rect*>(scenes[sceneIndex]->objects[i]);
 
 				rectShape.setSize(sf::Vector2f(rect->maxX - rect->minX, rect->maxY - rect->minY));
 				rectShape.setPosition(rect->minX, rect->minY);
@@ -110,8 +116,8 @@ struct Display {
 
 				window.draw(rectShape);
 			}
-			else if (scene->objects[i]->shape == 2) { // circle
-				Circle* circle = static_cast<Circle*>(scene->objects[i]);
+			else if (scenes[sceneIndex]->objects[i]->shape == "circle") {
+				Circle* circle = static_cast<Circle*>(scenes[sceneIndex]->objects[i]);
 
 				circleShape.setRadius(circle->radius);
 				circleShape.setPosition(circle->posX - circle->radius, circle->posY - circle->radius);
@@ -124,7 +130,7 @@ struct Display {
 		window.display();
 	}
 
-	void PlayScene(bool deterministic, int method) {
+	void PlayScene(int sceneIndex, const char* method, bool deterministic) {
 		sf::Clock clock;
 
 		float elapsedTime = 0.0f;
@@ -135,22 +141,22 @@ struct Display {
 		while (window.isOpen()) {
 			sf::Time dt = clock.restart();
 
-			DrawObjects();
+			DrawObjects(sceneIndex);
 
 			if (deterministic) {
 				accumulatedTime += dt.asSeconds();
 
 				while (accumulatedTime >= timeStep) {
-					scene->HandleUpdates(timeStep, method);
-					scene->HandleCollisions();
+					scenes[sceneIndex]->HandleUpdates(timeStep, method);
+					scenes[sceneIndex]->HandleCollisions();
 
 					accumulatedTime -= timeStep;
 					elapsedTime += timeStep;
 				}
 			}
 			else {
-				scene->HandleUpdates(dt.asSeconds(), method);
-				scene->HandleCollisions();
+				scenes[sceneIndex]->HandleUpdates(dt.asSeconds(), method);
+				scenes[sceneIndex]->HandleCollisions();
 
 				elapsedTime += dt.asSeconds();
 			}

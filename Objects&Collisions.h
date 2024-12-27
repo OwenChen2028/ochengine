@@ -45,6 +45,8 @@ static float FindSqrt(float x)
 
 struct Object {
     float mass;
+    float invMass;
+
     float restitution;
 
     float velocityX;
@@ -52,20 +54,13 @@ struct Object {
 
     float gravity;
 
-    int shape;
-    float invMass;
+    const char* shape;
 
     float forceX;
     float forceY;
 
-    Object(float mass_, float restitution_, float velocityX_, float velocityY_, float gravity_, int shape_) {
+    Object(float mass_, float restitution_, float velocityX_, float velocityY_, float gravity_, const char* shape_) {
         mass = mass_;
-        restitution = restitution_;
-
-        velocityX = velocityX_;
-        velocityY = velocityY_;
-
-        gravity = gravity_;
 
         if (mass != 0) {
             invMass = 1 / mass;
@@ -74,7 +69,14 @@ struct Object {
             invMass = 0; // infinite mass
         }
 
-        shape = shape_; // 1 for rect, 2 for circle
+        restitution = restitution_;
+
+        velocityX = velocityX_;
+        velocityY = velocityY_;
+
+        gravity = gravity_;
+
+        shape = shape_; // rect or circle
 
         forceX = 0.0f;
         forceY = 0.0f;
@@ -85,16 +87,16 @@ struct Object {
 
     virtual void Move(float dx, float dy) = 0;
 
-    void Update(float dt, int method) { // 1 for symplectic euler, 2 for rk4, 
+    void Update(float dt, const char* method) {
         forceY += gravity;
 
-        if (method == 1) {
+        if (method == "euler") { // symplectic euler
             velocityX += invMass * forceX * dt;
             velocityY += invMass * forceY * dt;
 
             Move(velocityX * dt, velocityY * dt);
         }
-        else if (method == 2) {
+        else if (method == "rk4") { // runge kutta 4
             float k1_vX = invMass * forceX; // initial derivatives
             float k1_vY = invMass * forceY;
             float k1_posX = velocityX;
@@ -107,7 +109,7 @@ struct Object {
             float temp_posX = GetCenterX() + k1_posX * halfDt;
             float temp_posY = GetCenterY() + k1_posY * halfDt;
 
-            float temp_forceX = forceX; // forces stay same
+            float temp_forceX = forceX; // forces stay the same
             float temp_forceY = forceY;
 
             float k2_vX = invMass * temp_forceX; // derivatives at midpoint
@@ -157,7 +159,7 @@ struct Rect : Object {
     float maxY;
 
     Rect(float mass_, float restitution_, float velocityX_, float velocityY_, float gravity_,
-        float minX_, float minY_, float maxX_, float maxY_) : Object(mass_, restitution_, velocityX_, velocityY_, gravity_, 1) {
+        float minX_, float minY_, float maxX_, float maxY_) : Object(mass_, restitution_, velocityX_, velocityY_, gravity_, "rect") {
         minX = minX_;
         minY = minY_;
 
@@ -189,7 +191,7 @@ struct Circle : Object {
     float posY;
 
     Circle(float mass_, float restitution_, float velocityX_, float velocityY_, float gravity_,
-        float radius_, float posX_, float posY_) : Object(mass_, restitution_, velocityX_, velocityY_, gravity_, 2) {
+        float radius_, float posX_, float posY_) : Object(mass_, restitution_, velocityX_, velocityY_, gravity_, "circle") {
         radius = radius_;
 
         posX = posX_;
