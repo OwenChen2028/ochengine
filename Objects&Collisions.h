@@ -87,7 +87,7 @@ struct Object {
 
     virtual void Move(float dx, float dy) = 0;
 
-    void Update(float dt, const char* method) {
+    void PhysicsUpdate(float dt, const char* method) {
         forceY += gravity;
 
         if (method == "euler") { // symplectic euler

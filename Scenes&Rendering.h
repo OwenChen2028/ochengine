@@ -10,16 +10,16 @@ struct Scene {
 		objects = objects_;
 	}
 
-	void HandleUpdates(float dt, const char* method) {
+	void HandlePhysicsUpdates(float dt, const char* method) {
 		for (int i = 0; i < objects.size(); i++) {
-			objects[i]->Update(dt, method);
+			objects[i]->PhysicsUpdate(dt, method);
 		}
 	}
 
 	void HandleCollisions() {
 		for (int i = 0; i < objects.size(); i++) {
 			for (int j = i + 1; j < objects.size(); j++) {
-				Collision* col = NULL;
+				Collision* col = nullptr;
 				bool collision = false;
 
 				if (objects[i]->shape == "rect") {
@@ -55,17 +55,20 @@ struct Scene {
 					}
 				}
 
-				if (collision) {
-					ResolveCollision(col);
-					CorrectPositions(col);
-				}
+				if (col != nullptr) {
+					if (collision) {
+						ResolveCollision(col);
+						CorrectPositions(col);
+					}
 
-				if (col != NULL) {
 					delete col;
 				}
 			}
 		}
 	}
+
+	virtual void ProcessEvent(sf::Event event) { }
+	virtual void HandleUpdates() { }
 };
 
 struct Game {
@@ -92,11 +95,19 @@ struct Game {
 	}
 
 	void OpenWindow() {
-		window.create(sf::VideoMode(windowWidth, windowHeight), windowName);
-		window.setFramerateLimit(updateFreq);
+		if (!window.isOpen()) {
+			window.create(sf::VideoMode(windowWidth, windowHeight), windowName);
+			window.setFramerateLimit(updateFreq);
+		}
 	}
 
-	void DrawObjects(int sceneIndex) {
+	void CloseWindow() {
+		if (window.isOpen()) {
+			window.close();
+		}
+	}
+
+	void DrawObjects(int sceneId) {
 		if (!window.isOpen()) {
 			return;
 		}
@@ -106,9 +117,9 @@ struct Game {
 		sf::RectangleShape rectShape;
 		sf::CircleShape circleShape;
 
-		for (int i = 0; i < scenes[sceneIndex]->objects.size(); i++) {
-			if (scenes[sceneIndex]->objects[i]->shape == "rect") {
-				Rect* rect = static_cast<Rect*>(scenes[sceneIndex]->objects[i]);
+		for (int i = 0; i < scenes[sceneId]->objects.size(); i++) {
+			if (scenes[sceneId]->objects[i]->shape == "rect") {
+				Rect* rect = static_cast<Rect*>(scenes[sceneId]->objects[i]);
 
 				rectShape.setSize(sf::Vector2f(rect->maxX - rect->minX, rect->maxY - rect->minY));
 				rectShape.setPosition(rect->minX, rect->minY);
@@ -116,8 +127,8 @@ struct Game {
 
 				window.draw(rectShape);
 			}
-			else if (scenes[sceneIndex]->objects[i]->shape == "circle") {
-				Circle* circle = static_cast<Circle*>(scenes[sceneIndex]->objects[i]);
+			else if (scenes[sceneId]->objects[i]->shape == "circle") {
+				Circle* circle = static_cast<Circle*>(scenes[sceneId]->objects[i]);
 
 				circleShape.setRadius(circle->radius);
 				circleShape.setPosition(circle->posX - circle->radius, circle->posY - circle->radius);
@@ -130,7 +141,7 @@ struct Game {
 		window.display();
 	}
 
-	void PlayScene(int sceneIndex, const char* method, bool deterministic) {
+	void PlayScene(int sceneId, const char* method, bool deterministic, float duration) {
 		sf::Clock clock;
 
 		float elapsedTime = 0.0f;
@@ -138,34 +149,41 @@ struct Game {
 		float accumulatedTime = 0.0f;
 		float timeStep = 1.0f / updateFreq;
 
-		while (window.isOpen()) {
+		while (elapsedTime < duration || duration == 0.0f) { // 0 for infinite duration
 			sf::Time dt = clock.restart();
 
-			DrawObjects(sceneIndex);
+			DrawObjects(sceneId);
+
+			sf::Event event;
+
+			while (window.pollEvent(event)) {
+				if (event.type == sf::Event::Closed) {
+					window.close();
+					return;
+				}
+				else {
+					scenes[sceneId]->ProcessEvent(event);
+				}
+			}
+
+			scenes[sceneId]->HandleUpdates();
 
 			if (deterministic) {
 				accumulatedTime += dt.asSeconds();
 
 				while (accumulatedTime >= timeStep) {
-					scenes[sceneIndex]->HandleUpdates(timeStep, method);
-					scenes[sceneIndex]->HandleCollisions();
+					scenes[sceneId]->HandlePhysicsUpdates(timeStep, method);
+					scenes[sceneId]->HandleCollisions();
 
 					accumulatedTime -= timeStep;
 					elapsedTime += timeStep;
 				}
 			}
 			else {
-				scenes[sceneIndex]->HandleUpdates(dt.asSeconds(), method);
-				scenes[sceneIndex]->HandleCollisions();
+				scenes[sceneId]->HandlePhysicsUpdates(dt.asSeconds(), method);
+				scenes[sceneId]->HandleCollisions();
 
 				elapsedTime += dt.asSeconds();
-			}
-
-			sf::Event event;
-			while (window.pollEvent(event)) {
-				if (event.type == sf::Event::Closed) {
-					window.close();
-				}
 			}
 		}
 	}
