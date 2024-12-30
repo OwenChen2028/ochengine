@@ -1,48 +1,47 @@
 #include "Scenes&Rendering.h"
-
 #include <iostream>
 
-int main() {
-    // simulation
-    Scene* scene1 = new Scene(std::vector<Object*>());
+Scene* SetupSimulationDemo() {
+    Scene* scene = new Scene(std::vector<Object*>());
 
-    scene1->objects.push_back(new Circle(1.0f, 1.0f, 100.0f, 0.0f, 1000.0f, 25.0f, 100.0f, 100.0f));
-    scene1->objects.push_back(new Circle(1.0f, 1.0f, -100.0f, 0.0f, 1000.0f, 25.0f, 100.0f, 100.0f));
+    scene->objects.push_back(new Circle(1.0f, 1.0f, 100.0f, 0.0f, 1000.0f, 25.0f, 100.0f, 100.0f));
+    scene->objects.push_back(new Circle(1.0f, 1.0f, -100.0f, 0.0f, 1000.0f, 25.0f, 100.0f, 100.0f));
 
-    scene1->objects.push_back(new Rect(1.0f, 1.0f, -100.0f, 0.0f, 1000.0f, 250.0f, 250.0f, 350.0f, 300.0f));
-    scene1->objects.push_back(new Rect(1.0f, 1.0f, 100.0f, 0.0f, 1000.0f, 250.0f, 250.0f, 350.0f, 300.0f));
+    scene->objects.push_back(new Rect(1.0f, 1.0f, -100.0f, 0.0f, 1000.0f, 250.0f, 250.0f, 350.0f, 300.0f));
+    scene->objects.push_back(new Rect(1.0f, 1.0f, 100.0f, 0.0f, 1000.0f, 250.0f, 250.0f, 350.0f, 300.0f));
 
-    scene1->objects.push_back(new Rect(1.0f, 1.0f, -100.0f, 0.0f, 1000.0f, 350.0f, 350.0f, 450.0f, 450.0f));
-    scene1->objects.push_back(new Circle(1.0f, 1.0f, 100.0f, 0.0f, 1000.0f, 50.0f, 400.0f, 400.0f));
+    scene->objects.push_back(new Rect(1.0f, 1.0f, -100.0f, 0.0f, 1000.0f, 350.0f, 350.0f, 450.0f, 450.0f));
+    scene->objects.push_back(new Circle(1.0f, 1.0f, 100.0f, 0.0f, 1000.0f, 50.0f, 400.0f, 400.0f));
 
-    scene1->objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 800.0f, 10.0f)); // top boundary
-    scene1->objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 590.0f, 800.0f, 600.0f)); // bottom boundary
-    scene1->objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 10.0f, 600.0f)); // left boundary
-    scene1->objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 790.0f, 0.0f, 800.0f, 600.0f)); // right boundary
-    
-    // pong
-    std::vector<Object*> objects2;
+    scene->objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 800.0f, 10.0f)); // top boundary
+    scene->objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 590.0f, 800.0f, 600.0f)); // bottom boundary
+    scene->objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 10.0f, 600.0f)); // left boundary
+    scene->objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 790.0f, 0.0f, 800.0f, 600.0f)); // right boundary
 
-    objects2.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 25.0f, 200.0f, 50.0f, 400.0f)); // left paddle
-    objects2.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 750.0f, 200.0f, 775.0f, 400.0f)); // right paddle
+    return scene;
+}
 
-    objects2.push_back(new Circle(1.0f, 1.0f, 500.0f, 250.0f, 0.0f, 25.0f, 400.0f, 300.0f)); // ball
+Scene* SetupPongDemo() {
+    std::vector<Object*> objects;
 
-    objects2.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -50.0f, 800.0f, 0.0f)); // top boundary
-    objects2.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 600.0f, 800.0f, 650.0f)); // bottom boundary
-    // objects2.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, -50.0f, 0.0f, 0.0f, 600.0f)); // left boundary
-    // objects2.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 800.0f, 0.0f, 850.0f, 600.0f)); // right boundary
+    objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 25.0f, 200.0f, 50.0f, 400.0f)); // left paddle
+    objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 750.0f, 200.0f, 775.0f, 400.0f)); // right paddle
 
-    struct Scene2 : Scene {
+    objects.push_back(new Circle(1.0f, 1.0f, 500.0f, 100.0f, 0.0f, 25.0f, 400.0f, 300.0f)); // ball
+
+    objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -50.0f, 800.0f, 0.0f)); // top boundary
+    objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 600.0f, 800.0f, 650.0f)); // bottom boundary
+    // objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, -50.0f, 0.0f, 0.0f, 600.0f)); // left boundary
+    // objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 800.0f, 0.0f, 850.0f, 600.0f)); // right boundary
+
+    struct CustomScene : Scene {
         bool keyPressed[4];
-
         float paddleSpeed;
 
-        Scene2(std::vector<Object*> objects_) : Scene(objects_) {
+        CustomScene(std::vector<Object*> objects_) : Scene(objects_) {
             for (int i = 0; i < 4; i++) {
                 keyPressed[i] = false;
             }
-
             paddleSpeed = 500.0f;
         }
 
@@ -109,7 +108,7 @@ int main() {
             else if (leftPaddle->GetCenterY() >= 500.0f && leftPaddle->velocityY >= 0.0f) {
                 leftPaddle->velocityY = 0.0f;
             }
-            
+
             if (rightPaddle->GetCenterY() <= 100.0f && rightPaddle->velocityY <= 0.0f) {
                 rightPaddle->velocityY = 0.0f;
             }
@@ -119,44 +118,52 @@ int main() {
         }
     };
 
-    Scene* scene2 = new Scene2(objects2);
+    return new CustomScene(objects);
+}
 
-    // run scenes
-    Game* game = new Game("Simulation Demo", 800, 600, 60, std::vector<Scene*>());
+void DeleteScene(Scene* scene) {
+    for (int i = 0; i < scene->objects.size(); i++) {
+        delete scene->objects[i];
+    }
+    delete scene;
+}
 
-    game->scenes.push_back(scene1);
-    game->scenes.push_back(scene2);
+int main() {
+    Game* game = new Game("Engine Demo", 800, 600, 60, std::vector<Scene*>());
 
-    int sceneId = 0;
+    game->scenes.push_back(SetupSimulationDemo());
+    game->scenes.push_back(SetupPongDemo());
+
+    int input = 0;
 
     while (true) {
-        std::cout << "Enter 0 for Simulation Demo, 1 for Pong Demo (-1 to exit): ";
-        std::cin >> sceneId;
+        std::cout << "Enter 0 for Simulation Demo, 1 for Pong Demo, 2 to refresh scenes (-1 to exit): ";
+        std::cin >> input;
 
-        if (sceneId == -1) {
+        if (input == -1) {
             std::cout << "Exiting...\n";
             break;
         }
-        else if (sceneId >= game->scenes.size()) {
+        else if (input == 0 || input == 1) {
+            game->OpenWindow();
+            game->PlayScene(input, "rk4", true, 0.0f);
+            game->CloseWindow();
+        }
+        else if (input == 2) {
+            DeleteScene(game->scenes[0]);
+            DeleteScene(game->scenes[1]);
+
+            game->scenes[0] = SetupSimulationDemo();
+            game->scenes[1] = SetupPongDemo();
+        }
+        else {
             std::cout << "Invalid input, try again.\n";
             continue;
         }
-
-        game->OpenWindow();
-        game->PlayScene(sceneId, "rk4", true, 0.0f);
-        game->CloseWindow();
     }
 
-    for (int i = 0; i < scene1->objects.size(); i++) {
-        delete scene1->objects[i];
-    }
-
-    for (int i = 0; i < scene2->objects.size(); i++) {
-        delete scene2->objects[i];
-    }
-
-    delete scene1;
-    delete scene2;
+    DeleteScene(game->scenes[0]);
+    DeleteScene(game->scenes[1]);
 
     delete game;
 
