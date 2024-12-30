@@ -82,34 +82,34 @@ Scene* SetupPongDemo() {
             Object* leftPaddle = objects[0];
             Object* rightPaddle = objects[1];
 
+            leftPaddle->velocityY = 0.0f; // left paddle movment
+
             if (keyPressed[0]) {
-                leftPaddle->velocityY = -1 * paddleSpeed;
+                leftPaddle->velocityY -= paddleSpeed;
             }
-            else if (keyPressed[1]) {
-                leftPaddle->velocityY = paddleSpeed;
+
+            if (keyPressed[1]) {
+                leftPaddle->velocityY += paddleSpeed;
             }
-            else { // no key pressed
-                leftPaddle->velocityY = 0.0f;
-            }
+
+            rightPaddle->velocityY = 0.0f; // right paddle movement
 
             if (keyPressed[2]) {
-                rightPaddle->velocityY = -1 * paddleSpeed;
-            }
-            else if (keyPressed[3]) {
-                rightPaddle->velocityY = paddleSpeed;
-            }
-            else { // no key pressed
-                rightPaddle->velocityY = 0.0f;
+                rightPaddle->velocityY -= paddleSpeed;
             }
 
-            if (leftPaddle->GetCenterY() <= 100.0f && leftPaddle->velocityY <= 0.0f) {
+            if (keyPressed[3]) {
+                rightPaddle->velocityY += paddleSpeed;
+            }
+
+            if (leftPaddle->GetCenterY() <= 100.0f && leftPaddle->velocityY <= 0.0f) { // clamp left paddle movement
                 leftPaddle->velocityY = 0.0f;
             }
             else if (leftPaddle->GetCenterY() >= 500.0f && leftPaddle->velocityY >= 0.0f) {
                 leftPaddle->velocityY = 0.0f;
             }
 
-            if (rightPaddle->GetCenterY() <= 100.0f && rightPaddle->velocityY <= 0.0f) {
+            if (rightPaddle->GetCenterY() <= 100.0f && rightPaddle->velocityY <= 0.0f) { // clamp right paddle movement
                 rightPaddle->velocityY = 0.0f;
             }
             else if (rightPaddle->GetCenterY() >= 500.0f && rightPaddle->velocityY >= 0.0f) {
