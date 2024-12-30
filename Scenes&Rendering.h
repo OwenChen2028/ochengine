@@ -6,7 +6,7 @@
 struct Scene {
 	std::vector<Object*> objects; // todo: use diff data structure (e.g. quadtree)
 
-	Scene(std::vector<Object*> objects_) {
+	Scene(std::vector<Object*> objects_ = std::vector<Object*>()) {
 		objects = objects_;
 	}
 
@@ -89,7 +89,7 @@ struct Game {
 
 	std::vector<Scene*> scenes;
 
-	Game(const char* windowName_, int windowWidth_, int windowHeight_, int updateFreq_, std::vector<Scene*> scenes_) {
+	Game(const char* windowName_, int windowWidth_, int windowHeight_, int updateFreq_ = 60, std::vector<Scene*> scenes_ = std::vector<Scene*>()) {
 		windowName = windowName_;
 		
 		windowWidth = windowWidth_;
@@ -106,8 +106,8 @@ struct Game {
 		}
 	}
 
-	void SetWindowActive(bool active) {
-		if (active) {
+	void ToggleWindow(bool open) {
+		if (open) {
 			window.create(sf::VideoMode(windowWidth, windowHeight), windowName);
 			window.setFramerateLimit(updateFreq);
 		}
@@ -150,15 +150,30 @@ struct Game {
 		window.display();
 	}
 
-	void PlayScene(int sceneId, const char* method, bool deterministic, float duration) {
+	void PlayScene(int sceneId, float duration = 0.0f, const char* method = "rk4", bool deterministic = true, bool waitForFocus = false) {
+		Scene* scene = scenes[sceneId];
+
+		if (waitForFocus) {
+			DrawObjects(scene);
+
+			while (!window.hasFocus()) {
+				sf::Event event;
+
+				while (window.pollEvent(event)) {
+					if (event.type == sf::Event::Closed) {
+						window.close();
+						break;
+					}
+				}
+			}
+		}
+		
 		sf::Clock clock;
 
 		float elapsedTime = 0.0f;
 
 		float accumulatedTime = 0.0f;
 		float timeStep = 1.0f / updateFreq;
-
-		Scene* scene = scenes[sceneId];
 
 		while (elapsedTime < duration || duration == 0.0f) { // 0 for infinite duration
 			sf::Time dt = clock.restart();
@@ -169,7 +184,7 @@ struct Game {
 
 			while (window.pollEvent(event)) {
 				if (event.type == sf::Event::Closed) {
-					SetWindowActive(false);
+					ToggleWindow(false);
 					break;
 				}
 				else {

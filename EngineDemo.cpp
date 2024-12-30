@@ -1,8 +1,8 @@
 #include "Scenes&Rendering.h"
 #include <iostream>
 
-Scene* SetupSimulationDemo() {
-    Scene* scene = new Scene(std::vector<Object*>());
+Scene* SetupSimDemo() {
+    Scene* scene = new Scene();
 
     scene->objects.push_back(new Circle(1.0f, 1.0f, 100.0f, 0.0f, 1000.0f, 25.0f, 100.0f, 100.0f));
     scene->objects.push_back(new Circle(1.0f, 1.0f, -100.0f, 0.0f, 1000.0f, 25.0f, 100.0f, 100.0f));
@@ -115,6 +115,7 @@ Scene* SetupPongDemo() {
 
     objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -50.0f, 800.0f, 0.0f)); // top boundary
     objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 600.0f, 800.0f, 650.0f)); // bottom boundary
+
     // objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, -50.0f, 0.0f, 0.0f, 600.0f)); // left boundary
     // objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 800.0f, 0.0f, 850.0f, 600.0f)); // right boundary
 
@@ -122,36 +123,40 @@ Scene* SetupPongDemo() {
 }
 
 int main() {
-    Game* game = new Game("Engine Demo", 800, 600, 60, std::vector<Scene*>());
+    Game* game = new Game("Engine Demo", 800, 600);
 
     // Setup initial scenes
-    game->scenes.push_back(SetupSimulationDemo());
+    game->scenes.push_back(SetupSimDemo());
     game->scenes.push_back(SetupPongDemo());
 
     int input = 0;
 
-    while (true) {
-        std::cout << "Enter 0 for Simulation Demo, 1 for Pong Demo, 2 to reload scenes (-1 to exit): ";
-        std::cin >> input;
+    std::cout << "Commands:\n0 - simulation demo\n1 - pong demo\n2 - reload scenes\n-1 - exit program\n\nInputs:\n";
 
+    while (std::cin >> input) {
         if (input == -1) {
             std::cout << "Exiting...\n";
             break;
         }
-        else if (input == 0 || input == 1) {
-            game->SetWindowActive(true);
-            game->PlayScene(input, "rk4", true, 0.0f);
-            game->SetWindowActive(false);
+        else if (input == 0 || input == 1) { // input is sceneId
+            game->ToggleWindow(true);
+            if (input == 0) {
+                game->PlayScene(input);
+            }
+            else if (input == 1) {
+                game->PlayScene(input, 0.0f, "euler", false, true);
+            }
+            game->ToggleWindow(false);
         }
         else if (input == 2) {
             delete game->scenes[0];
             delete game->scenes[1];
 
-            game->scenes[0] = SetupSimulationDemo();
+            game->scenes[0] = SetupSimDemo();
             game->scenes[1] = SetupPongDemo();
         }
         else {
-            std::cout << "Invalid input, try again.\n";
+            std::cout << "unknown command\n";
             continue;
         }
     }
