@@ -10,6 +10,12 @@ struct Scene {
 		objects = objects_;
 	}
 
+	virtual ~Scene() {
+		for (Object* obj : objects) {
+			delete obj;
+		}
+	}
+
 	void HandlePhysicsUpdates(float dt, const char* method) {
 		for (int i = 0; i < objects.size(); i++) {
 			objects[i]->PhysicsUpdate(dt, method);
@@ -94,15 +100,18 @@ struct Game {
 		scenes = scenes_;
 	}
 
-	void OpenWindow() {
-		if (!window.isOpen()) {
-			window.create(sf::VideoMode(windowWidth, windowHeight), windowName);
-			window.setFramerateLimit(updateFreq);
+	~Game() {
+		for (Scene* scene : scenes) {
+			delete scene;
 		}
 	}
 
-	void CloseWindow() {
-		if (window.isOpen()) {
+	void SetWindowActive(bool active) {
+		if (active) {
+			window.create(sf::VideoMode(windowWidth, windowHeight), windowName);
+			window.setFramerateLimit(updateFreq);
+		}
+		else {
 			window.close();
 		}
 	}
@@ -160,7 +169,7 @@ struct Game {
 
 			while (window.pollEvent(event)) {
 				if (event.type == sf::Event::Closed) {
-					window.close();
+					SetWindowActive(false);
 					break;
 				}
 				else {

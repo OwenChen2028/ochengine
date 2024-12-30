@@ -82,6 +82,8 @@ struct Object {
         forceY = 0.0f;
     }
 
+    virtual ~Object() = default;
+
     virtual float GetCenterX() = 0;
     virtual float GetCenterY() = 0;
 
