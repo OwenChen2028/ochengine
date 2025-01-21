@@ -1,59 +1,112 @@
 #include "Objects&Collisions.h"
 
-#include <vector>
 #include <SFML/Graphics.hpp>
 
-struct Scene {
-	std::vector<Object*> objects; // todo: use diff data structure (e.g. quadtree)
+template <typename T> struct Container {
+	T* values;
 
-	Scene(std::vector<Object*> objects_ = std::vector<Object*>()) {
+	int size;
+	int capacity;
+
+	Container() {
+		size = 0;
+		capacity = 10;
+
+		values = new T[capacity];
+	}
+
+	void addValue(T value) {
+		if (size == capacity) {
+			capacity *= 2;
+			T* newValues = new T[capacity];
+			
+			for (int i = 0; i < size; i++) {
+				newValues[i] = values[i];
+			}
+
+			delete[] values;
+			values = newValues;
+		}
+
+		values[size] = value;
+		size++;
+	}
+
+	void setValue(T value, int index) {
+		if (index >= 0 && index < size) {
+			values[index] = value;
+		}
+		else if (index == capacity) {
+			addValue(value);
+		}
+	}
+
+	T getValue(int index) {
+		if (index >= 0 && index < size) {
+			return values[index];
+		}
+	}
+
+	int getSize() {
+		return size;
+	}
+
+	int getCapacity() {
+		return capacity;
+	}
+};
+
+struct Scene {
+	Container<Object*> objects; // todo: use diff data structure (e.g. quadtree)
+
+	Scene(Container<Object*> objects_ = Container<Object*>()) {
 		objects = objects_;
 	}
 
 	virtual ~Scene() {
-		for (Object* obj : objects) {
-			delete obj;
+		for (int i = 0; i < objects.getSize(); i++) {
+			delete objects.getValue(i);
 		}
 	}
 
 	void HandlePhysicsUpdates(float dt, const char* method) {
-		for (int i = 0; i < objects.size(); i++) {
-			objects[i]->PhysicsUpdate(dt, method);
+		for (int i = 0; i < objects.getSize(); i++) {
+			objects.getValue(i)->PhysicsUpdate(dt, method);
 		}
 	}
 
 	void HandleCollisions() {
-		for (int i = 0; i < objects.size(); i++) {
-			for (int j = i + 1; j < objects.size(); j++) {
+		for (int i = 0; i < objects.getSize(); i++) {
+			for (int j = i + 1; j < objects.getSize(); j++) {
 				Collision* col = nullptr;
 				bool collision = false;
 
-				if (objects[i]->shape == "rect") {
-					if (objects[j]->shape == "rect") {
-						col = new Collision(objects[i], objects[j]);
+				if (objects.getValue(i)->shape == "rect") {
+					if (objects.getValue(j)->shape == "rect") {
+						col = new Collision(objects.getValue(i), objects.getValue(j));
 
 						if (CheckRectRectCol(col)) {
 							collision = true;
 						}
 					}
-					else if (objects[j]->shape == "circle") {
-						col = new Collision(objects[i], objects[j]);
+					else if (objects.getValue(j)->shape == "circle") {
+						col = new Collision(objects.getValue(i), objects.getValue(j));
 
 						if (CheckRectCircleCol(col)) {
 							collision = true;
 						}
 					}
 				}
-				else if (objects[i]->shape == "circle") {
-					if (objects[j]->shape == "rect") {
-						col = new Collision(objects[j], objects[i]); // swap to rect and circle
+				else if (objects.getValue(i)->shape == "circle") {
+					if (objects.getValue(j)->shape == "rect") {
+						col = new Collision(objects.getValue(j), objects.getValue(i)); // swap to rect and circle
 
 						if (CheckRectCircleCol(col)) {
 							collision = true;
 						}
 					}
-					else if (objects[j]->shape == "circle") {
-						col = new Collision(objects[i], objects[j]);
+					else if (objects.getValue(j)->shape == "circle") {
+						col = new Collision(objects.getValue(i), objects.getValue(j));
 
 						if (CheckCircleCircleCol(col)) {
 							collision = true;
@@ -87,9 +140,9 @@ struct Game {
 
 	int updateFreq;
 
-	std::vector<Scene*> scenes;
+	Container<Scene*> scenes;
 
-	Game(const char* windowName_, int windowWidth_, int windowHeight_, int updateFreq_ = 60, std::vector<Scene*> scenes_ = std::vector<Scene*>()) {
+	Game(const char* windowName_, int windowWidth_, int windowHeight_, int updateFreq_ = 60, Container<Scene*> scenes_ = Container<Scene*>()) {
 		windowName = windowName_;
 		
 		windowWidth = windowWidth_;
@@ -101,8 +154,8 @@ struct Game {
 	}
 
 	~Game() {
-		for (Scene* scene : scenes) {
-			delete scene;
+		for (int i = 0; i < scenes.getSize(); i++) {
+			delete scenes.getValue(i);
 		}
 	}
 
@@ -126,9 +179,9 @@ struct Game {
 		sf::RectangleShape rectShape;
 		sf::CircleShape circleShape;
 
-		for (int i = 0; i < scene->objects.size(); i++) {
-			if (scene->objects[i]->shape == "rect") {
-				Rect* rect = static_cast<Rect*>(scene->objects[i]);
+		for (int i = 0; i < scene->objects.getSize(); i++) {
+			if (scene->objects.getValue(i)->shape == "rect") {
+				Rect* rect = static_cast<Rect*>(scene->objects.getValue(i));
 
 				rectShape.setSize(sf::Vector2f(rect->maxX - rect->minX, rect->maxY - rect->minY));
 				rectShape.setPosition(rect->minX, rect->minY);
@@ -136,8 +189,8 @@ struct Game {
 
 				window.draw(rectShape);
 			}
-			else if (scene->objects[i]->shape == "circle") {
-				Circle* circle = static_cast<Circle*>(scene->objects[i]);
+			else if (scene->objects.getValue(i)->shape == "circle") {
+				Circle* circle = static_cast<Circle*>(scene->objects.getValue(i));
 
 				circleShape.setRadius(circle->radius);
 				circleShape.setPosition(circle->posX - circle->radius, circle->posY - circle->radius);
@@ -151,7 +204,7 @@ struct Game {
 	}
 
 	void PlayScene(int sceneId, float duration = 0.0f, const char* method = "rk4", bool deterministic = true, bool waitForFocus = false) {
-		Scene* scene = scenes[sceneId];
+		Scene* scene = scenes.getValue(sceneId);
 
 		if (waitForFocus) {
 			DrawObjects(scene);

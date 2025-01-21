@@ -4,19 +4,19 @@
 Scene* SetupSimDemo() {
     Scene* scene = new Scene();
 
-    scene->objects.push_back(new Circle(1.0f, 1.0f, 100.0f, 0.0f, 1000.0f, 25.0f, 100.0f, 100.0f));
-    scene->objects.push_back(new Circle(1.0f, 1.0f, -100.0f, 0.0f, 1000.0f, 25.0f, 100.0f, 100.0f));
+    scene->objects.addValue(new Circle(1.0f, 1.0f, 100.0f, 0.0f, 1000.0f, 25.0f, 100.0f, 100.0f));
+    scene->objects.addValue(new Circle(1.0f, 1.0f, -100.0f, 0.0f, 1000.0f, 25.0f, 100.0f, 100.0f));
 
-    scene->objects.push_back(new Rect(1.0f, 1.0f, -100.0f, 0.0f, 1000.0f, 250.0f, 250.0f, 350.0f, 300.0f));
-    scene->objects.push_back(new Rect(1.0f, 1.0f, 100.0f, 0.0f, 1000.0f, 250.0f, 250.0f, 350.0f, 300.0f));
+    scene->objects.addValue(new Rect(1.0f, 1.0f, -100.0f, 0.0f, 1000.0f, 250.0f, 250.0f, 350.0f, 300.0f));
+    scene->objects.addValue(new Rect(1.0f, 1.0f, 100.0f, 0.0f, 1000.0f, 250.0f, 250.0f, 350.0f, 300.0f));
 
-    scene->objects.push_back(new Rect(1.0f, 1.0f, -100.0f, 0.0f, 1000.0f, 350.0f, 350.0f, 450.0f, 450.0f));
-    scene->objects.push_back(new Circle(1.0f, 1.0f, 100.0f, 0.0f, 1000.0f, 50.0f, 400.0f, 400.0f));
+    scene->objects.addValue(new Rect(1.0f, 1.0f, -100.0f, 0.0f, 1000.0f, 350.0f, 350.0f, 450.0f, 450.0f));
+    scene->objects.addValue(new Circle(1.0f, 1.0f, 100.0f, 0.0f, 1000.0f, 50.0f, 400.0f, 400.0f));
 
-    scene->objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 800.0f, 10.0f)); // top boundary
-    scene->objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 590.0f, 800.0f, 600.0f)); // bottom boundary
-    scene->objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 10.0f, 600.0f)); // left boundary
-    scene->objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 790.0f, 0.0f, 800.0f, 600.0f)); // right boundary
+    scene->objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 800.0f, 10.0f)); // top boundary
+    scene->objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 590.0f, 800.0f, 600.0f)); // bottom boundary
+    scene->objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 10.0f, 600.0f)); // left boundary
+    scene->objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 790.0f, 0.0f, 800.0f, 600.0f)); // right boundary
 
     return scene;
 }
@@ -25,7 +25,7 @@ struct PongScene : Scene {
     bool keyPressed[4];
     float paddleSpeed;
 
-    PongScene(std::vector<Object*> objects_) : Scene(objects_) {
+    PongScene(Container<Object*> objects_) : Scene(objects_) {
         for (int i = 0; i < 4; i++) {
             keyPressed[i] = false;
         }
@@ -66,8 +66,8 @@ struct PongScene : Scene {
     }
 
     void HandleUpdates() override {
-        Object* leftPaddle = objects[0];
-        Object* rightPaddle = objects[1];
+        Object* leftPaddle = objects.getValue(0);
+        Object* rightPaddle = objects.getValue(1);
 
         leftPaddle->velocityY = 0.0f; // left paddle movment
 
@@ -106,18 +106,18 @@ struct PongScene : Scene {
 };
 
 Scene* SetupPongDemo() {
-    std::vector<Object*> objects;
+    Container<Object*> objects;
 
-    objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 25.0f, 200.0f, 50.0f, 400.0f)); // left paddle
-    objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 750.0f, 200.0f, 775.0f, 400.0f)); // right paddle
+    objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 25.0f, 200.0f, 50.0f, 400.0f)); // left paddle
+    objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 750.0f, 200.0f, 775.0f, 400.0f)); // right paddle
 
-    objects.push_back(new Circle(1.0f, 1.0f, 500.0f, 100.0f, 0.0f, 25.0f, 400.0f, 300.0f)); // ball
+    objects.addValue(new Circle(1.0f, 1.0f, 500.0f, 100.0f, 0.0f, 25.0f, 400.0f, 300.0f)); // ball
 
-    objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -50.0f, 800.0f, 0.0f)); // top boundary
-    objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 600.0f, 800.0f, 650.0f)); // bottom boundary
+    objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -50.0f, 800.0f, 0.0f)); // top boundary
+    objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 600.0f, 800.0f, 650.0f)); // bottom boundary
 
-    // objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, -50.0f, 0.0f, 0.0f, 600.0f)); // left boundary
-    // objects.push_back(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 800.0f, 0.0f, 850.0f, 600.0f)); // right boundary
+    // objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, -50.0f, 0.0f, 0.0f, 600.0f)); // left boundary
+    // objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 800.0f, 0.0f, 850.0f, 600.0f)); // right boundary
 
     return new PongScene(objects);
 }
@@ -125,9 +125,8 @@ Scene* SetupPongDemo() {
 int main() {
     Game* game = new Game("Engine Demo", 800, 600);
 
-    // Setup initial scenes
-    game->scenes.push_back(SetupSimDemo());
-    game->scenes.push_back(SetupPongDemo());
+    game->scenes.addValue(SetupSimDemo());
+    game->scenes.addValue(SetupPongDemo());
 
     int input = 0;
 
@@ -149,14 +148,14 @@ int main() {
             game->ToggleWindow(false);
         }
         else if (input == 2) {
-            delete game->scenes[0];
-            delete game->scenes[1];
+            delete game->scenes.getValue(0);
+            delete game->scenes.getValue(1);
 
-            game->scenes[0] = SetupSimDemo();
-            game->scenes[1] = SetupPongDemo();
+            game->scenes.setValue(SetupSimDemo(), 0);
+            game->scenes.setValue(SetupPongDemo(), 1);
         }
         else {
-            std::cout << "unknown command\n";
+            std::cout << "Unknown command.\n";
             continue;
         }
     }
