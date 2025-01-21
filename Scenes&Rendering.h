@@ -45,6 +45,9 @@ template <typename T> struct Container {
 		if (index >= 0 && index < size) {
 			return values[index];
 		}
+		else {
+			return T(); // default value
+		}
 	}
 
 	int getSize() {
