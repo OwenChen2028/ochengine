@@ -1,5 +1,4 @@
 #include "Objects&Collisions.h"
-
 #include <SFML/Graphics.hpp>
 
 template <typename T> struct Container {
