@@ -14,6 +14,35 @@ template <typename T> struct Container {
 		values = new T[capacity];
 	}
 
+	~Container() {
+		delete[] values;
+	}
+
+	Container(const Container& other) : size(other.size), capacity(other.capacity) {
+		values = new T[capacity];
+
+		for (int i = 0; i < size; i++) {
+			values[i] = other.values[i];
+		}
+	}
+
+	Container& operator = (const Container& other) {
+		if (this != &other) {
+			delete[] values;
+
+			size = other.size;
+			capacity = other.capacity;
+
+			values = new T[FindMax(capacity, size)];
+
+			for (int i = 0; i < size; ++i) {
+				values[i] = other.values[i];
+			}
+		}
+
+		return *this;
+	}
+
 	void addValue(T value) {
 		if (size == capacity) {
 			capacity *= 2;
