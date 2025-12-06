@@ -7,13 +7,12 @@ Ochengine is a custom 2D physics engine implemented in C++ with SFML rendering s
 ## Overview
 
 The following features have been implemented:
-- Rigid body dynamics with position and velocity updates
+- Translational rigid-body dynamics
 - Multiple integration methods (Symplectic Euler and RK4)
-- Collision detection between various shape combinations:
+- Collision detection and resolution between various shapes:
   - Rectangle to rectangle
   - Circle to circle
   - Rectangle to circle
-- Collision resolution with impulse-based physics
 - Position correction to prevent object penetration
 
 ## Code Structure
@@ -69,35 +68,19 @@ Each object can have the following physical properties:
 - **Gravity**: Individual gravity settings
 - **Force**: Accumulator for applied forces
 
-## Interactive Demos
-
-### Simulation Demo
-
-Demonstrates various physics interactions with multiple objects of different shapes and masses interacting with gravity and boundaries.
-
-### Pong Demo
-
-An interactive implementation of the classic Pong game with:
-- Keyboard controls (W/S for left paddle, Up/Down arrows for right paddle)
-- Physics-based ball movement
-- Collision response
-
 ## How to Use
 
 ### Requirements
 
 - C++ compiler with C++11 support
-- SFML library
+- SFML library: `sudo apt install libsfml-dev`
 
 ### Running the Demos
 
-1. Compile the project with your C++ compiler, linking against SFML
-2. Run the executable
-3. Use the menu to select a demo:
+1. Compile the demo: `g++ EngineDemo.cpp -lsfml-graphics -lsfml-window -lsfml-system`
+3. Run the executable
+4. Use the menu to select a demo:
    - Enter `0` for the simulation demo
    - Enter `1` for the interactive pong demo
    - Enter `2` to reload the scenes
    - Enter `-1` to exit
-
-### Extending the Engine
-The engine can be extended by creating new shape types (inheriting from the Object class), implementing collision detection for these shapes, adding support for tags, etc. Feel free to explore and build upon this foundation to create your own unique games and physics simulations. 
