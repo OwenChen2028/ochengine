@@ -33,7 +33,7 @@ template <typename T> struct Container {
 			size = other.size;
 			capacity = other.capacity;
 
-			values = new T[FindMax(capacity, size)];
+			values = new T[capacity];
 
 			for (int i = 0; i < size; ++i) {
 				values[i] = other.values[i];
@@ -47,7 +47,7 @@ template <typename T> struct Container {
 		if (size == capacity) {
 			capacity *= 2;
 			T* newValues = new T[capacity];
-			
+
 			for (int i = 0; i < size; i++) {
 				newValues[i] = values[i];
 			}
