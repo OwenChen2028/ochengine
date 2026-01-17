@@ -1,7 +1,5 @@
 # Ochengine
 
-Ochengine © 2024 by Owen Chen is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/?ref=chooser-v1)
-
 Ochengine is a custom 2D physics engine implemented in C++ with SFML rendering support. Notably, no other libraries are used. It supports rigid body physics simulation with collision detection and resolution for rectangles and circles. 
 
 ## Overview
