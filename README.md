@@ -1,6 +1,6 @@
 # Ochengine
 
-Ochengine is a custom 2D physics engine implemented in C++ with SFML rendering support. Notably, no other libraries are used. It supports rigid body physics simulation with collision detection and resolution for rectangles and circles.
+Ochengine is a custom 2D physics engine implemented in C++ with SFML rendering support. Notably, no other libraries are used.
 
 ## Overview
 
