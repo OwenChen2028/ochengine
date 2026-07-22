@@ -1,2 +1,10 @@
 *.gch
 *.out
+
+# CMake build directories and generated files
+build/
+cmake-build-*/
+compile_commands.json
+
+# Editor files
+*.swp
