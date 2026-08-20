@@ -32,11 +32,12 @@ Pass `-DOCHENGINE_BUILD_EXAMPLES=OFF` to CMake to skip the examples.
 
 ```bash
 ./build/simulation_demo
-./build/simple_pong_demo
+./build/pong_demo
 ```
 
-Press R to restart either demo. In Pong, W/S controls the left paddle and the
-arrow keys control the right paddle. Close the window to quit.
+Press R to restart either demo. In Pong, W/S controls the left paddle, the arrow
+keys control the right paddle, and Space serves the ball. The first player to
+11 points wins. Close the window to quit.
 
 ## Use as a library
 
