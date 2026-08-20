@@ -26,6 +26,9 @@ struct Game {
     scenes = scenes_;
   }
 
+  Game(const Game &) = delete;
+  Game &operator=(const Game &) = delete;
+
   ~Game() {
     for (int i = 0; i < scenes.getSize(); i++) {
       delete scenes.getValue(i);

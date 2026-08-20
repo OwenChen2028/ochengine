@@ -9,6 +9,9 @@ struct Scene {
 
   Scene(Container<Object *> objects_ = Container<Object *>()) { objects = objects_; }
 
+  Scene(const Scene &) = delete;
+  Scene &operator=(const Scene &) = delete;
+
   virtual ~Scene() {
     for (int i = 0; i < objects.getSize(); i++) {
       delete objects.getValue(i);
@@ -30,48 +33,30 @@ struct Scene {
           continue;
         }
 
-        Collision *col = nullptr;
+        Object *object1 = objects.getValue(i);
+        Object *object2 = objects.getValue(j);
         bool collision = false;
 
-        if (objects.getValue(i)->shape == ShapeType::Rectangle) {
-          if (objects.getValue(j)->shape == ShapeType::Rectangle) {
-            col = new Collision(objects.getValue(i), objects.getValue(j));
-
-            if (CheckRectRectCol(col)) {
-              collision = true;
-            }
-          } else if (objects.getValue(j)->shape == ShapeType::Circle) {
-            col = new Collision(objects.getValue(i), objects.getValue(j));
-
-            if (CheckRectCircleCol(col)) {
-              collision = true;
-            }
-          }
-        } else if (objects.getValue(i)->shape == ShapeType::Circle) {
-          if (objects.getValue(j)->shape == ShapeType::Rectangle) {
-            col = new Collision(objects.getValue(j),
-                                objects.getValue(i)); // swap to rect and circle
-
-            if (CheckRectCircleCol(col)) {
-              collision = true;
-            }
-          } else if (objects.getValue(j)->shape == ShapeType::Circle) {
-            col = new Collision(objects.getValue(i), objects.getValue(j));
-
-            if (CheckCircleCircleCol(col)) {
-              collision = true;
-            }
-          }
+        if (object1->shape == ShapeType::Circle && object2->shape == ShapeType::Rectangle) {
+          Object *temp = object1;
+          object1 = object2;
+          object2 = temp;
         }
 
-        if (col != nullptr) {
-          if (collision) {
-            ResolveCollision(col);
-            CorrectPositions(col);
-            OnCollision(col);
-          }
+        Collision col(object1, object2);
 
-          delete col;
+        if (object1->shape == ShapeType::Rectangle && object2->shape == ShapeType::Rectangle) {
+          collision = CheckRectRectCol(&col);
+        } else if (object1->shape == ShapeType::Rectangle && object2->shape == ShapeType::Circle) {
+          collision = CheckRectCircleCol(&col);
+        } else if (object1->shape == ShapeType::Circle && object2->shape == ShapeType::Circle) {
+          collision = CheckCircleCircleCol(&col);
+        }
+
+        if (collision) {
+          ResolveCollision(&col);
+          CorrectPositions(&col);
+          OnCollision(&col);
         }
       }
     }
