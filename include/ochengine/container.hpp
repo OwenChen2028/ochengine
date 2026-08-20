@@ -43,15 +43,17 @@ template <typename T> struct Container {
 
   void addValue(T value) {
     if (size == capacity) {
-      capacity *= 2;
-      T *newValues = new T[capacity];
+      int newCapacity = capacity * 2;
+      T *newValues = new T[newCapacity];
 
       for (int i = 0; i < size; i++) {
         newValues[i] = values[i];
       }
 
       delete[] values;
+
       values = newValues;
+      capacity = newCapacity;
     }
 
     values[size] = value;
