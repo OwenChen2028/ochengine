@@ -1,7 +1,6 @@
 #pragma once
 
-template <typename T>
-struct Container {
+template <typename T> struct Container {
   T *values;
 
   int size;
@@ -16,8 +15,7 @@ struct Container {
 
   ~Container() { delete[] values; }
 
-  Container(const Container &other)
-      : size(other.size), capacity(other.capacity) {
+  Container(const Container &other) : size(other.size), capacity(other.capacity) {
     values = new T[capacity];
 
     for (int i = 0; i < size; i++) {

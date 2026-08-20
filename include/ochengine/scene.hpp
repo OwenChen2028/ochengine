@@ -7,9 +7,7 @@
 struct Scene {
   Container<Object *> objects; // todo: use diff data structure (e.g. quadtree)
 
-  Scene(Container<Object *> objects_ = Container<Object *>()) {
-    objects = objects_;
-  }
+  Scene(Container<Object *> objects_ = Container<Object *>()) { objects = objects_; }
 
   virtual ~Scene() {
     for (int i = 0; i < objects.getSize(); i++) {

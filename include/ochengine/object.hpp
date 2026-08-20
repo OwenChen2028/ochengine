@@ -1,10 +1,8 @@
 #pragma once
 
-enum class IntegrationType { Euler,
-                             RK4 };
+enum class IntegrationType { Euler, RK4 };
 
-enum class ShapeType { Rectangle,
-                       Circle };
+enum class ShapeType { Rectangle, Circle };
 
 struct Object {
   float mass;
@@ -22,8 +20,7 @@ struct Object {
   float forceX;
   float forceY;
 
-  Object(float mass_, float restitution_, float velocityX_, float velocityY_,
-         float gravity_, ShapeType shape_) {
+  Object(float mass_, float restitution_, float velocityX_, float velocityY_, float gravity_, ShapeType shape_) {
     mass = mass_;
 
     if (mass != 0) {
@@ -68,8 +65,7 @@ struct Object {
 
       float halfDt = dt / 2.0f;
 
-      float temp_vX =
-          velocityX + k1_vX * halfDt; // temporary values at midpoint
+      float temp_vX = velocityX + k1_vX * halfDt; // temporary values at midpoint
       float temp_vY = velocityY + k1_vY * halfDt;
       float temp_posX = GetCenterX() + k1_posX * halfDt;
       float temp_posY = GetCenterY() + k1_posY * halfDt;
@@ -105,8 +101,7 @@ struct Object {
       float k4_posX = temp_vX;
       float k4_posY = temp_vY;
 
-      Move(dt / 6.0f * (k1_posX + 2 * k2_posX + 2 * k3_posX + k4_posX),
-           dt / 6.0f * (k1_posY + 2 * k2_posY + 2 * k3_posY + k4_posY));
+      Move(dt / 6.0f * (k1_posX + 2 * k2_posX + 2 * k3_posX + k4_posX), dt / 6.0f * (k1_posY + 2 * k2_posY + 2 * k3_posY + k4_posY));
 
       velocityX += dt / 6.0f * (k1_vX + 2 * k2_vX + 2 * k3_vX + k4_vX);
       velocityY += dt / 6.0f * (k1_vY + 2 * k2_vY + 2 * k3_vY + k4_vY);

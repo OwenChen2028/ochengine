@@ -162,8 +162,7 @@ inline void ResolveCollision(Collision *col) {
   float tempInvMass1 = o1->invMass;
   float tempInvMass2 = o2->invMass;
 
-  if (o1->invMass == 0 &&
-      o2->invMass == 0) { // two infinite mass objects collide
+  if (o1->invMass == 0 && o2->invMass == 0) { // two infinite mass objects collide
     if (o1->velocityX != 0 || o1->velocityY != 0) {
       tempInvMass1 = 1.0f;
     } else if (o2->velocityX != 0 || o2->velocityY != 0) {
@@ -187,8 +186,7 @@ inline void ResolveCollision(Collision *col) {
 
   float minRestitution = FindMin(o1->restitution, o2->restitution);
 
-  float impulseMagnitude = (-1 * (1 + minRestitution) * normalVelocity) /
-                           (tempInvMass1 + tempInvMass2);
+  float impulseMagnitude = (-1 * (1 + minRestitution) * normalVelocity) / (tempInvMass1 + tempInvMass2);
 
   o1->velocityX -= tempInvMass1 * impulseMagnitude * normalX;
   o1->velocityY -= tempInvMass1 * impulseMagnitude * normalY;
@@ -204,8 +202,7 @@ inline void CorrectPositions(Collision *col) {
   float tempInvMass1 = o1->invMass;
   float tempInvMass2 = o2->invMass;
 
-  if (o1->invMass == 0 &&
-      o2->invMass == 0) { // two infinite mass objects collide
+  if (o1->invMass == 0 && o2->invMass == 0) { // two infinite mass objects collide
     if (o1->velocityX != 0 || o1->velocityY != 0) {
       tempInvMass1 = 1.0f;
     } else if (o2->velocityX != 0 || o2->velocityY != 0) {
@@ -218,9 +215,7 @@ inline void CorrectPositions(Collision *col) {
   float correctionFactor = 0.2f;
   float correctionThreshold = 0.01f;
 
-  float correctionMagnitude =
-      correctionFactor * FindMax(col->penetration - correctionThreshold, 0.0f) /
-      (tempInvMass1 + tempInvMass2);
+  float correctionMagnitude = correctionFactor * FindMax(col->penetration - correctionThreshold, 0.0f) / (tempInvMass1 + tempInvMass2);
 
   float correctionX = correctionMagnitude * col->normalX;
   float correctionY = correctionMagnitude * col->normalY;

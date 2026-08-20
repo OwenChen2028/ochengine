@@ -65,19 +65,15 @@ struct PongScene : Scene {
       rightPaddle->velocityY += paddleSpeed;
     }
 
-    if (leftPaddle->GetCenterY() <= 100.0f &&
-        leftPaddle->velocityY <= 0.0f) { // clamp left paddle movement
+    if (leftPaddle->GetCenterY() <= 100.0f && leftPaddle->velocityY <= 0.0f) { // clamp left paddle movement
       leftPaddle->velocityY = 0.0f;
-    } else if (leftPaddle->GetCenterY() >= 500.0f &&
-               leftPaddle->velocityY >= 0.0f) {
+    } else if (leftPaddle->GetCenterY() >= 500.0f && leftPaddle->velocityY >= 0.0f) {
       leftPaddle->velocityY = 0.0f;
     }
 
-    if (rightPaddle->GetCenterY() <= 100.0f &&
-        rightPaddle->velocityY <= 0.0f) { // clamp right paddle movement
+    if (rightPaddle->GetCenterY() <= 100.0f && rightPaddle->velocityY <= 0.0f) { // clamp right paddle movement
       rightPaddle->velocityY = 0.0f;
-    } else if (rightPaddle->GetCenterY() >= 500.0f &&
-               rightPaddle->velocityY >= 0.0f) {
+    } else if (rightPaddle->GetCenterY() >= 500.0f && rightPaddle->velocityY >= 0.0f) {
       rightPaddle->velocityY = 0.0f;
     }
   }
@@ -93,18 +89,14 @@ private:
       keyPressed[i] = false;
     }
 
-    objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 25.0f, 200.0f,
-                              50.0f, 400.0f)); // left paddle
-    objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 750.0f, 200.0f,
-                              775.0f, 400.0f)); // right paddle
+    objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 25.0f, 200.0f, 50.0f, 400.0f));   // left paddle
+    objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 750.0f, 200.0f, 775.0f, 400.0f)); // right paddle
 
     objects.addValue(new Circle(1.0f, 1.0f, 500.0f, 100.0f, 0.0f, 25.0f, 400.0f,
                                 300.0f)); // ball
 
-    objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -50.0f,
-                              800.0f, 0.0f)); // top boundary
-    objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 600.0f,
-                              800.0f, 650.0f)); // bottom boundary
+    objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -50.0f, 800.0f, 0.0f));   // top boundary
+    objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 600.0f, 800.0f, 650.0f)); // bottom boundary
   }
 };
 
