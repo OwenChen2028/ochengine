@@ -129,7 +129,7 @@ struct Game {
       if (deterministic) {
         accumulatedTime += dt.asSeconds();
 
-        while (accumulatedTime >= timeStep) {
+        while (accumulatedTime >= timeStep && (elapsedTime < duration || duration == 0.0f)) {
           scene->HandleFixedUpdate(timeStep);
           scene->HandlePhysicsUpdates(timeStep, method);
           scene->HandleCollisions();
