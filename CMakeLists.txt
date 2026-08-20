@@ -7,10 +7,14 @@ project(
     LANGUAGES CXX
 )
 
-include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/OchengineClean.cmake")
-ochengine_enable_clean("${CMAKE_CURRENT_SOURCE_DIR}")
-
 option(OCHENGINE_BUILD_EXAMPLES "Build the Ochengine examples" ON)
+
+set_property(
+    DIRECTORY APPEND
+    PROPERTY ADDITIONAL_CLEAN_FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/examples/brick_breaker/build"
+        "${CMAKE_CURRENT_SOURCE_DIR}/examples/brick_breaker_3d/build"
+)
 
 find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
 

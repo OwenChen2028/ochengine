@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 3.16)
 
 project(OchengineBrickBreaker LANGUAGES CXX)
 
-include("${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/OchengineClean.cmake")
-ochengine_enable_clean("${CMAKE_CURRENT_SOURCE_DIR}")
-
 find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
 
 add_executable(brick_breaker brick_breaker.cpp)
