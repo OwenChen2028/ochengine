@@ -1,6 +1,7 @@
 #pragma once
 
-template <typename T> struct Container {
+template <typename T>
+struct Container {
   T *values;
 
   int size;

@@ -1,8 +1,10 @@
 #pragma once
 
-enum class IntegrationType { Euler, RK4 };
+enum class IntegrationType { Euler,
+                             RK4 };
 
-enum class ShapeType { Rectangle, Circle };
+enum class ShapeType { Rectangle,
+                       Circle };
 
 struct Object {
   float mass;
