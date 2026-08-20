@@ -28,6 +28,15 @@ cmake --build build
 
 Pass `-DOCHENGINE_BUILD_EXAMPLES=OFF` to CMake to skip the examples.
 
+## Cleaning generated files
+
+Clean generated files and inactive example build directories with CMake's
+standard `clean` target:
+
+```bash
+cmake --build build --target clean
+```
+
 ## Examples
 
 ```bash
@@ -38,6 +47,11 @@ Pass `-DOCHENGINE_BUILD_EXAMPLES=OFF` to CMake to skip the examples.
 Press R to restart either demo. In Pong, W/S controls the left paddle, the arrow
 keys control the right paddle, and Space serves the ball. The first player to
 11 points wins. Close the window to quit.
+
+### Full games
+
+- [Brick Breaker](examples/brick_breaker/README.md)
+- [Brick Breaker 3D](examples/brick_breaker_3d/README.md)
 
 ## Use as a library
 

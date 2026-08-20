@@ -7,6 +7,9 @@ project(
     LANGUAGES CXX
 )
 
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/OchengineClean.cmake")
+ochengine_enable_clean("${CMAKE_CURRENT_SOURCE_DIR}")
+
 option(OCHENGINE_BUILD_EXAMPLES "Build the Ochengine examples" ON)
 
 find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
