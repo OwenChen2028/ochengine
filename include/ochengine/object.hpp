@@ -1,5 +1,15 @@
 #pragma once
 
+enum class IntegrationType {
+    Euler,
+    RK4
+};
+
+enum class ShapeType {
+    Rectangle,
+    Circle
+};
+
 struct Object {
     float mass;
     float invMass;
@@ -11,12 +21,12 @@ struct Object {
 
     float gravity;
 
-    const char* shape;
+    ShapeType shape;
 
     float forceX;
     float forceY;
 
-    Object(float mass_, float restitution_, float velocityX_, float velocityY_, float gravity_, const char* shape_) {
+    Object(float mass_, float restitution_, float velocityX_, float velocityY_, float gravity_, ShapeType shape_) {
         mass = mass_;
 
         if (mass != 0) {
@@ -33,7 +43,7 @@ struct Object {
 
         gravity = gravity_;
 
-        shape = shape_; // rect or circle
+        shape = shape_;
 
         forceX = 0.0f;
         forceY = 0.0f;
@@ -46,16 +56,16 @@ struct Object {
 
     virtual void Move(float dx, float dy) = 0;
 
-    void PhysicsUpdate(float dt, const char* method) {
+    void PhysicsUpdate(float dt, IntegrationType method) {
         forceY += mass * gravity;
 
-        if (method == "euler") { // symplectic euler
+        if (method == IntegrationType::Euler) { // symplectic euler
             velocityX += invMass * forceX * dt;
             velocityY += invMass * forceY * dt;
 
             Move(velocityX * dt, velocityY * dt);
         }
-        else if (method == "rk4") { // runge kutta 4
+        else if (method == IntegrationType::RK4) { // runge kutta 4
             float k1_vX = invMass * forceX; // initial derivatives
             float k1_vY = invMass * forceY;
             float k1_posX = velocityX;

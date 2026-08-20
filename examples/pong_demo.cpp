@@ -114,7 +114,7 @@ int main() {
     game.scenes.addValue(new PongScene());
 
     game.ToggleWindow(true);
-    game.PlayScene(0);
+    game.PlayScene(0, 0.0f, IntegrationType::Euler, false, true);
 
     return 0;
 }

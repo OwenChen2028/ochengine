@@ -17,7 +17,7 @@ struct Scene {
 		}
 	}
 
-	void HandlePhysicsUpdates(float dt, const char* method) {
+	void HandlePhysicsUpdates(float dt, IntegrationType method) {
 		for (int i = 0; i < objects.getSize(); i++) {
 			objects.getValue(i)->PhysicsUpdate(dt, method);
 		}
@@ -29,15 +29,15 @@ struct Scene {
 				Collision* col = nullptr;
 				bool collision = false;
 
-				if (objects.getValue(i)->shape == "rect") {
-					if (objects.getValue(j)->shape == "rect") {
+				if (objects.getValue(i)->shape == ShapeType::Rectangle) {
+					if (objects.getValue(j)->shape == ShapeType::Rectangle) {
 						col = new Collision(objects.getValue(i), objects.getValue(j));
 
 						if (CheckRectRectCol(col)) {
 							collision = true;
 						}
 					}
-					else if (objects.getValue(j)->shape == "circle") {
+					else if (objects.getValue(j)->shape == ShapeType::Circle) {
 						col = new Collision(objects.getValue(i), objects.getValue(j));
 
 						if (CheckRectCircleCol(col)) {
@@ -45,15 +45,15 @@ struct Scene {
 						}
 					}
 				}
-				else if (objects.getValue(i)->shape == "circle") {
-					if (objects.getValue(j)->shape == "rect") {
+				else if (objects.getValue(i)->shape == ShapeType::Circle) {
+					if (objects.getValue(j)->shape == ShapeType::Rectangle) {
 						col = new Collision(objects.getValue(j), objects.getValue(i)); // swap to rect and circle
 
 						if (CheckRectCircleCol(col)) {
 							collision = true;
 						}
 					}
-					else if (objects.getValue(j)->shape == "circle") {
+					else if (objects.getValue(j)->shape == ShapeType::Circle) {
 						col = new Collision(objects.getValue(i), objects.getValue(j));
 
 						if (CheckCircleCircleCol(col)) {

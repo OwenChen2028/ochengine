@@ -53,7 +53,7 @@ struct Game {
 		sf::CircleShape circleShape;
 
 		for (int i = 0; i < scene->objects.getSize(); i++) {
-			if (scene->objects.getValue(i)->shape == "rect") {
+			if (scene->objects.getValue(i)->shape == ShapeType::Rectangle) {
 				Rect* rect = static_cast<Rect*>(scene->objects.getValue(i));
 
 				rectShape.setSize(sf::Vector2f(rect->maxX - rect->minX, rect->maxY - rect->minY));
@@ -62,7 +62,7 @@ struct Game {
 
 				window.draw(rectShape);
 			}
-			else if (scene->objects.getValue(i)->shape == "circle") {
+			else if (scene->objects.getValue(i)->shape == ShapeType::Circle) {
 				Circle* circle = static_cast<Circle*>(scene->objects.getValue(i));
 
 				circleShape.setRadius(circle->radius);
@@ -76,7 +76,7 @@ struct Game {
 		window.display();
 	}
 
-	void PlayScene(int sceneId, float duration = 0.0f, const char* method = "rk4", bool deterministic = true, bool waitForFocus = false) {
+	void PlayScene(int sceneId, float duration = 0.0f, IntegrationType method = IntegrationType::RK4, bool deterministic = true, bool waitForFocus = false) {
 		Scene* scene = scenes.getValue(sceneId);
 
 		if (waitForFocus) {

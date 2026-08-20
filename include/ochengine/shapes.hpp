@@ -10,7 +10,7 @@ struct Rect : Object {
     float maxY;
 
     Rect(float mass_, float restitution_, float velocityX_, float velocityY_, float gravity_,
-        float minX_, float minY_, float maxX_, float maxY_) : Object(mass_, restitution_, velocityX_, velocityY_, gravity_, "rect") {
+        float minX_, float minY_, float maxX_, float maxY_) : Object(mass_, restitution_, velocityX_, velocityY_, gravity_, ShapeType::Rectangle) {
         minX = minX_;
         minY = minY_;
 
@@ -42,7 +42,7 @@ struct Circle : Object {
     float posY;
 
     Circle(float mass_, float restitution_, float velocityX_, float velocityY_, float gravity_,
-        float radius_, float posX_, float posY_) : Object(mass_, restitution_, velocityX_, velocityY_, gravity_, "circle") {
+        float radius_, float posX_, float posY_) : Object(mass_, restitution_, velocityX_, velocityY_, gravity_, ShapeType::Circle) {
         radius = radius_;
 
         posX = posX_;
