@@ -107,16 +107,21 @@ inline bool CheckRectCircleCol(Collision *col) {
   float closestX = FindClamp(dispX, -1 * r1EdgeX / 2, r1EdgeX / 2);
   float closestY = FindClamp(dispY, -1 * r1EdgeY / 2, r1EdgeY / 2);
 
-  bool inside = false;
-
   if (dispX == closestX && dispY == closestY) {
-    if (FindAbs(dispX) > FindAbs(dispY)) {
-      closestX = FindSign(closestX) * r1EdgeX / 2;
+    float distX = r1EdgeX / 2 - FindAbs(dispX);
+    float distY = r1EdgeY / 2 - FindAbs(dispY);
+
+    if (distX < distY) {
+      col->normalX = FindSign(dispX);
+      col->normalY = 0;
+      col->penetration = c2->radius + distX;
     } else {
-      closestY = FindSign(closestY) * r1EdgeY / 2;
+      col->normalX = 0;
+      col->normalY = FindSign(dispY);
+      col->penetration = c2->radius + distY;
     }
 
-    inside = true;
+    return true;
   }
 
   float normalX = dispX - closestX;
@@ -125,32 +130,16 @@ inline bool CheckRectCircleCol(Collision *col) {
   float radius = c2->radius;
   float normalSquared = FindSquare(normalX) + FindSquare(normalY);
 
-  if (normalSquared > FindSquare(radius) && !inside) {
+  if (normalSquared > FindSquare(radius)) {
     return false;
   }
 
-  if (inside) {
-    if (normalSquared != 0) {
-      float normalMagnitude = FindSqrt(normalSquared);
+  float normalMagnitude = FindSqrt(normalSquared);
 
-      col->normalX = -1 * normalX / normalMagnitude;
-      col->normalY = -1 * normalY / normalMagnitude;
+  col->normalX = normalX / normalMagnitude;
+  col->normalY = normalY / normalMagnitude;
 
-      col->penetration = c2->radius - normalMagnitude;
-    } else {
-      col->normalX = 1;
-      col->normalY = 0;
-
-      col->penetration = c2->radius;
-    }
-  } else {
-    float normalMagnitude = FindSqrt(normalSquared);
-
-    col->normalX = normalX / normalMagnitude;
-    col->normalY = normalY / normalMagnitude;
-
-    col->penetration = c2->radius - normalMagnitude;
-  }
+  col->penetration = c2->radius - normalMagnitude;
 
   return true;
 }
