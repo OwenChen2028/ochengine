@@ -17,13 +17,19 @@ struct Scene {
 
   void HandlePhysicsUpdates(float dt, IntegrationType method) {
     for (int i = 0; i < objects.getSize(); i++) {
-      objects.getValue(i)->PhysicsUpdate(dt, method);
+      if (objects.getValue(i)->active) {
+        objects.getValue(i)->PhysicsUpdate(dt, method);
+      }
     }
   }
 
   void HandleCollisions() {
     for (int i = 0; i < objects.getSize(); i++) {
       for (int j = i + 1; j < objects.getSize(); j++) {
+        if (!objects.getValue(i)->active || !objects.getValue(j)->active) {
+          continue;
+        }
+
         Collision *col = nullptr;
         bool collision = false;
 
@@ -62,6 +68,7 @@ struct Scene {
           if (collision) {
             ResolveCollision(col);
             CorrectPositions(col);
+            OnCollision(col);
           }
 
           delete col;
@@ -70,6 +77,8 @@ struct Scene {
     }
   }
 
-  virtual void ProcessEvent(sf::Event event) {}
+  virtual void HandleEvent(sf::Event event) {}
   virtual void HandleUpdates() {}
+  virtual void HandleFixedUpdate(float dt) {}
+  virtual void OnCollision(Collision *col) {}
 };

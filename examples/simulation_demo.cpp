@@ -5,7 +5,7 @@ namespace {
 struct SimulationScene : Scene {
   SimulationScene() { Reset(); }
 
-  void ProcessEvent(sf::Event event) override {
+  void HandleEvent(sf::Event event) override {
     if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::R) {
       Reset();
     }

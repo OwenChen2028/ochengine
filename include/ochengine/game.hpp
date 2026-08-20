@@ -52,6 +52,10 @@ struct Game {
     sf::CircleShape circleShape;
 
     for (int i = 0; i < scene->objects.getSize(); i++) {
+      if (!scene->objects.getValue(i)->active) {
+        continue;
+      }
+
       if (scene->objects.getValue(i)->shape == ShapeType::Rectangle) {
         Rect *rect = static_cast<Rect *>(scene->objects.getValue(i));
 
@@ -111,7 +115,7 @@ struct Game {
           ToggleWindow(false);
           break;
         } else {
-          scene->ProcessEvent(event);
+          scene->HandleEvent(event);
         }
       }
 
@@ -125,6 +129,7 @@ struct Game {
         accumulatedTime += dt.asSeconds();
 
         while (accumulatedTime >= timeStep) {
+          scene->HandleFixedUpdate(timeStep);
           scene->HandlePhysicsUpdates(timeStep, method);
           scene->HandleCollisions();
 
@@ -132,6 +137,7 @@ struct Game {
           elapsedTime += timeStep;
         }
       } else {
+        scene->HandleFixedUpdate(dt.asSeconds());
         scene->HandlePhysicsUpdates(dt.asSeconds(), method);
         scene->HandleCollisions();
 

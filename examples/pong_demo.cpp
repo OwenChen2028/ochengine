@@ -11,7 +11,7 @@ struct PongScene : Scene {
     Reset();
   }
 
-  void ProcessEvent(sf::Event event) override {
+  void HandleEvent(sf::Event event) override {
     if (event.type == sf::Event::KeyPressed) {
       if (event.key.code == sf::Keyboard::R) {
         Reset();
@@ -41,7 +41,7 @@ struct PongScene : Scene {
     }
   }
 
-  void HandleUpdates() override {
+  void HandleFixedUpdate(float dt) override {
     Object *leftPaddle = objects.getValue(0);
     Object *rightPaddle = objects.getValue(1);
 

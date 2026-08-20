@@ -16,6 +16,7 @@ struct Object {
   float gravity;
 
   ShapeType shape;
+  bool active;
 
   float forceX;
   float forceY;
@@ -37,6 +38,7 @@ struct Object {
     gravity = gravity_;
 
     shape = shape_;
+    active = true;
 
     forceX = 0.0f;
     forceY = 0.0f;
