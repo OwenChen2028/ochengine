@@ -30,7 +30,9 @@ target_link_libraries(
 )
 
 if(OCHENGINE_BUILD_EXAMPLES)
-    add_executable(ochengine_demo examples/engine_demo.cpp)
-    target_link_libraries(ochengine_demo PRIVATE ochengine::ochengine)
-endif()
+    add_executable(simulation_demo examples/simulation_demo.cpp)
+    target_link_libraries(simulation_demo PRIVATE ochengine::ochengine)
 
+    add_executable(pong_demo examples/pong_demo.cpp)
+    target_link_libraries(pong_demo PRIVATE ochengine::ochengine)
+endif()
