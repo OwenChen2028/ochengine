@@ -32,7 +32,7 @@ Pass `-DOCHENGINE_BUILD_EXAMPLES=OFF` to CMake to skip the examples.
 
 ```bash
 ./build/simulation_demo
-./build/pong_demo
+./build/simple_pong_demo
 ```
 
 Press R to restart either demo. In Pong, W/S controls the left paddle and the

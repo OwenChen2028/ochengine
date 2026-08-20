@@ -96,8 +96,7 @@ private:
     objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 25.0f, 200.0f, 50.0f, 400.0f));   // left paddle
     objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 750.0f, 200.0f, 775.0f, 400.0f)); // right paddle
 
-    objects.addValue(new Circle(1.0f, 1.0f, 500.0f, 100.0f, 0.0f, 25.0f, 400.0f,
-                                300.0f)); // ball
+    objects.addValue(new Circle(1.0f, 1.0f, 500.0f, 100.0f, 0.0f, 25.0f, 400.0f, 300.0f)); // ball
 
     objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -50.0f, 800.0f, 0.0f));   // top boundary
     objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 600.0f, 800.0f, 650.0f)); // bottom boundary
@@ -107,7 +106,7 @@ private:
 } // namespace
 
 int main() {
-  Game game("Pong Demo", 800, 600);
+  Game game("Simple Pong Demo", 800, 600);
   game.scenes.addValue(new PongScene());
 
   game.ToggleWindow(true);
