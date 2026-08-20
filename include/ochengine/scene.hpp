@@ -36,11 +36,13 @@ struct Scene {
         Object *object1 = objects.getValue(i);
         Object *object2 = objects.getValue(j);
         bool collision = false;
+        bool swapped = false;
 
         if (object1->shape == ShapeType::Circle && object2->shape == ShapeType::Rectangle) {
           Object *temp = object1;
           object1 = object2;
           object2 = temp;
+          swapped = true;
         }
 
         Collision col(object1, object2);
@@ -56,7 +58,17 @@ struct Scene {
         if (collision) {
           ResolveCollision(&col);
           CorrectPositions(&col);
-          OnCollisionStay(&col);
+
+          if (swapped) {
+            Object *temp = col.object1;
+            col.object1 = col.object2;
+            col.object2 = temp;
+
+            col.normalX *= -1;
+            col.normalY *= -1;
+          }
+
+          OnCollisionStay(col);
         }
       }
     }
@@ -65,5 +77,5 @@ struct Scene {
   virtual void HandleEvent(sf::Event) {}
   virtual void HandleUpdates() {}
   virtual void HandleFixedUpdate(float) {}
-  virtual void OnCollisionStay(Collision *) {}
+  virtual void OnCollisionStay(Collision &) {}
 };

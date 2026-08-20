@@ -25,16 +25,17 @@ template <typename T> struct Container {
 
   Container &operator=(const Container &other) {
     if (this != &other) {
+      T *newValues = new T[other.capacity];
+
+      for (int i = 0; i < other.size; ++i) {
+        newValues[i] = other.values[i];
+      }
+
       delete[] values;
 
+      values = newValues;
       size = other.size;
       capacity = other.capacity;
-
-      values = new T[capacity];
-
-      for (int i = 0; i < size; ++i) {
-        values[i] = other.values[i];
-      }
     }
 
     return *this;
