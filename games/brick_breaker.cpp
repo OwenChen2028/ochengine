@@ -18,6 +18,8 @@ struct BrickBreakerScene : Scene {
   bool waitingForServe;
   bool gameOver;
   bool levelComplete;
+  bool paddleColliding;
+  bool paddleCollidingLastUpdate;
 
   int score;
   int lives;
@@ -73,6 +75,9 @@ struct BrickBreakerScene : Scene {
   }
 
   void HandleFixedUpdate(float dt) override {
+    paddleCollidingLastUpdate = paddleColliding;
+    paddleColliding = false;
+
     if (levelComplete) {
       level++;
       SetupBricks();
@@ -128,14 +133,17 @@ struct BrickBreakerScene : Scene {
     }
 
     if (other == paddle) {
-      ball->velocityX += paddle->velocityX * 0.2f;
+      if (!paddleCollidingLastUpdate && !paddleColliding) {
+        ball->velocityX += paddle->velocityX * 0.2f;
 
-      if (ball->velocityX > 650.0f) {
-        ball->velocityX = 650.0f;
-      } else if (ball->velocityX < -650.0f) {
-        ball->velocityX = -650.0f;
+        if (ball->velocityX > 650.0f) {
+          ball->velocityX = 650.0f;
+        } else if (ball->velocityX < -650.0f) {
+          ball->velocityX = -650.0f;
+        }
       }
 
+      paddleColliding = true;
       return;
     }
 
@@ -203,6 +211,8 @@ private:
     waitingForServe = false;
     gameOver = false;
     levelComplete = false;
+    paddleColliding = false;
+    paddleCollidingLastUpdate = false;
     leftPressed = false;
     rightPressed = false;
 
