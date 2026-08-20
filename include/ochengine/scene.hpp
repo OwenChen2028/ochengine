@@ -2,7 +2,7 @@
 
 #include "ochengine/collision.hpp"
 #include "ochengine/container.hpp"
-#include <SFML/Window/Event.hpp>
+#include <SFML/Graphics.hpp>
 
 struct Scene {
   Container<Object *> objects; // todo: use diff data structure (e.g. quadtree)
@@ -78,4 +78,35 @@ struct Scene {
   virtual void HandleUpdates() {}
   virtual void HandleFixedUpdate(float) {}
   virtual void OnCollisionStay(Collision &) {}
+
+  virtual void HandleDraw(sf::RenderWindow &window) {
+    window.clear();
+
+    sf::RectangleShape rectShape;
+    sf::CircleShape circleShape;
+
+    for (int i = 0; i < objects.getSize(); i++) {
+      if (!objects.getValue(i)->active) {
+        continue;
+      }
+
+      if (objects.getValue(i)->shape == ShapeType::Rectangle) {
+        Rect *rect = static_cast<Rect *>(objects.getValue(i));
+
+        rectShape.setSize(sf::Vector2f(rect->maxX - rect->minX, rect->maxY - rect->minY));
+        rectShape.setPosition(rect->minX, rect->minY);
+        rectShape.setFillColor(sf::Color::White);
+
+        window.draw(rectShape);
+      } else if (objects.getValue(i)->shape == ShapeType::Circle) {
+        Circle *circle = static_cast<Circle *>(objects.getValue(i));
+
+        circleShape.setRadius(circle->radius);
+        circleShape.setPosition(circle->posX - circle->radius, circle->posY - circle->radius);
+        circleShape.setFillColor(sf::Color::White);
+
+        window.draw(circleShape);
+      }
+    }
+  }
 };

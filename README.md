@@ -1,15 +1,15 @@
 # Ochengine
 
-Ochengine is a small, header-only 2D physics engine written in C++11. SFML is
-used for the window, input, and rendering.
+Ochengine is a small, header-only 2D physics engine written in C++11 without the
+standard library. It uses SFML for windows, input, and drawing. The container
+and math routines, including square root, are implemented in the engine.
 
-It currently supports:
+## Features
 
-- Rectangle/rectangle, circle/circle, and rectangle/circle collisions
-- Collision resolution with restitution
-- Position correction to prevent object penetration
-- Symplectic Euler and RK2 integration
-- Per-object mass, velocity, gravity, and force
+- Circle and axis-aligned rectangle collision detection
+- Impulse-based collision response with restitution and position correction
+- Symplectic Euler and midpoint RK2 integration
+- Scenes with event, update, collision, and drawing hooks
 
 ## Build
 
@@ -48,3 +48,18 @@ Add `include/` to your include path, then include either the complete engine:
 
 or only the headers needed by your program. The CMake target is
 `ochengine::ochengine` when the project is included with `add_subdirectory`.
+
+Derive from `Scene` and add an instance to `game.scenes`. `PlayScene` takes the
+scene's index. Objects go in the scene's `objects` container. `Game` owns its
+scenes, and `Scene` owns its objects.
+
+The available hooks are:
+
+- `HandleEvent` for SFML input events
+- `HandleUpdates` once per frame
+- `HandleFixedUpdate` before each physics step
+- `OnCollisionStay` after a collision is resolved
+- `HandleDraw` for drawing the frame
+
+The default `HandleDraw` clears the window and draws every active object in
+white. An override replaces that behavior.

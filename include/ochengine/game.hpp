@@ -49,35 +49,7 @@ struct Game {
       return;
     }
 
-    window.clear();
-
-    sf::RectangleShape rectShape;
-    sf::CircleShape circleShape;
-
-    for (int i = 0; i < scene->objects.getSize(); i++) {
-      if (!scene->objects.getValue(i)->active) {
-        continue;
-      }
-
-      if (scene->objects.getValue(i)->shape == ShapeType::Rectangle) {
-        Rect *rect = static_cast<Rect *>(scene->objects.getValue(i));
-
-        rectShape.setSize(sf::Vector2f(rect->maxX - rect->minX, rect->maxY - rect->minY));
-        rectShape.setPosition(rect->minX, rect->minY);
-        rectShape.setFillColor(sf::Color::White);
-
-        window.draw(rectShape);
-      } else if (scene->objects.getValue(i)->shape == ShapeType::Circle) {
-        Circle *circle = static_cast<Circle *>(scene->objects.getValue(i));
-
-        circleShape.setRadius(circle->radius);
-        circleShape.setPosition(circle->posX - circle->radius, circle->posY - circle->radius);
-        circleShape.setFillColor(sf::Color::White);
-
-        window.draw(circleShape);
-      }
-    }
-
+    scene->HandleDraw(window);
     window.display();
   }
 
