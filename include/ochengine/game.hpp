@@ -109,8 +109,6 @@ struct Game {
     while (elapsedTime < duration || duration == 0.0f) { // 0 for infinite duration
       sf::Time dt = clock.restart();
 
-      DrawObjects(scene);
-
       sf::Event event;
 
       while (window.pollEvent(event)) {
@@ -146,6 +144,8 @@ struct Game {
 
         elapsedTime += dt.asSeconds();
       }
+
+      DrawObjects(scene);
     }
   }
 };
