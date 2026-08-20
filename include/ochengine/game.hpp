@@ -87,7 +87,7 @@ struct Game {
     if (waitForFocus) {
       DrawObjects(scene);
 
-      while (!window.hasFocus()) {
+      while (window.isOpen() && !window.hasFocus()) {
         sf::Event event;
 
         while (window.pollEvent(event)) {

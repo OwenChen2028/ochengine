@@ -60,7 +60,7 @@ template <typename T> struct Container {
   void setValue(T value, int index) {
     if (index >= 0 && index < size) {
       values[index] = value;
-    } else if (index == capacity) {
+    } else if (index == size) {
       addValue(value);
     }
   }

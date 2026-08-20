@@ -56,7 +56,7 @@ struct Scene {
         if (collision) {
           ResolveCollision(&col);
           CorrectPositions(&col);
-          OnCollision(&col);
+          OnCollisionStay(&col);
         }
       }
     }
@@ -65,5 +65,5 @@ struct Scene {
   virtual void HandleEvent(sf::Event) {}
   virtual void HandleUpdates() {}
   virtual void HandleFixedUpdate(float) {}
-  virtual void OnCollision(Collision *) {}
+  virtual void OnCollisionStay(Collision *) {}
 };

@@ -74,5 +74,5 @@ struct Object {
 
     forceX = 0.0f;
     forceY = 0.0f;
-  };
+  }
 };

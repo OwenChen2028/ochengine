@@ -22,7 +22,7 @@ static float FindSqrt(float x) {
   float y = x;
   float z = (y + (x / y)) / 2;
 
-  while (FindAbs(y - z) >= 0.0000001) { // 7 digits
+  while (FindAbs(y - z) >= 0.0000001f) { // 7 digits
     y = z;
     z = (y + (x / y)) / 2;
   }

@@ -88,7 +88,7 @@ inline bool CheckCircleCircleCol(Collision *col) {
     col->normalX = 1;
     col->normalY = 0;
 
-    col->penetration = FindMin(c1->radius, c2->radius);
+    col->penetration = c1->radius + c2->radius;
   }
 
   return true;
