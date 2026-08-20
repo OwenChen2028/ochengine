@@ -77,8 +77,8 @@ struct Scene {
     }
   }
 
-  virtual void HandleEvent(sf::Event event) {}
+  virtual void HandleEvent(sf::Event) {}
   virtual void HandleUpdates() {}
-  virtual void HandleFixedUpdate(float dt) {}
-  virtual void OnCollision(Collision *col) {}
+  virtual void HandleFixedUpdate(float) {}
+  virtual void OnCollision(Collision *) {}
 };

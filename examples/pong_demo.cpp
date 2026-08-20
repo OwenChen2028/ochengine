@@ -38,10 +38,14 @@ struct PongScene : Scene {
       } else if (event.key.code == sf::Keyboard::Down) {
         keyPressed[3] = false;
       }
+    } else if (event.type == sf::Event::LostFocus) {
+      for (int i = 0; i < 4; i++) {
+        keyPressed[i] = false;
+      }
     }
   }
 
-  void HandleFixedUpdate(float dt) override {
+  void HandleFixedUpdate(float) override {
     Object *leftPaddle = objects.getValue(0);
     Object *rightPaddle = objects.getValue(1);
 

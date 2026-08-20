@@ -8,7 +8,7 @@ It currently supports:
 - Rectangle/rectangle, circle/circle, and rectangle/circle collisions
 - Collision resolution with restitution
 - Position correction to prevent object penetration
-- Symplectic Euler and RK4 integration
+- Symplectic Euler and RK2 integration
 - Per-object mass, velocity, gravity, and force
 
 ## Build

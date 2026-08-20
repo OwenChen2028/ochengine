@@ -1,6 +1,6 @@
 #pragma once
 
-enum class IntegrationType { Euler, RK4 };
+enum class IntegrationType { Euler, RK2 };
 
 enum class ShapeType { Rectangle, Circle };
 
@@ -59,54 +59,17 @@ struct Object {
       velocityY += invMass * forceY * dt;
 
       Move(velocityX * dt, velocityY * dt);
-    } else if (method == IntegrationType::RK4) { // runge kutta 4
-      float k1_vX = invMass * forceX;            // initial derivatives
-      float k1_vY = invMass * forceY;
-      float k1_posX = velocityX;
-      float k1_posY = velocityY;
+    } else if (method == IntegrationType::RK2) { // midpoint runge kutta 2
+      float accelX = invMass * forceX;
+      float accelY = invMass * forceY;
 
-      float halfDt = dt / 2.0f;
+      float midVelocityX = velocityX + accelX * dt / 2.0f;
+      float midVelocityY = velocityY + accelY * dt / 2.0f;
 
-      float temp_vX = velocityX + k1_vX * halfDt; // temporary values at midpoint
-      float temp_vY = velocityY + k1_vY * halfDt;
-      float temp_posX = GetCenterX() + k1_posX * halfDt;
-      float temp_posY = GetCenterY() + k1_posY * halfDt;
+      Move(midVelocityX * dt, midVelocityY * dt);
 
-      float temp_forceX = forceX; // forces stay the same
-      float temp_forceY = forceY;
-
-      float k2_vX = invMass * temp_forceX; // derivatives at midpoint
-      float k2_vY = invMass * temp_forceY;
-      float k2_posX = temp_vX;
-      float k2_posY = temp_vY;
-
-      temp_vX = velocityX + k2_vX * halfDt;
-      temp_vY = velocityY + k2_vY * halfDt;
-      temp_posX = GetCenterX() + k2_posX * halfDt;
-      temp_posY = GetCenterY() + k2_posY * halfDt;
-
-      temp_forceX = forceX;
-      temp_forceY = forceY;
-
-      float k3_vX = invMass * temp_forceX; // refined derivatives at midpoint
-      float k3_vY = invMass * temp_forceY;
-      float k3_posX = temp_vX;
-      float k3_posY = temp_vY;
-
-      temp_vX = velocityX + k3_vX * dt;
-      temp_vY = velocityY + k3_vY * dt;
-      temp_posX = GetCenterX() + k3_posX * dt;
-      temp_posY = GetCenterY() + k3_posY * dt;
-
-      float k4_vX = invMass * forceX; // derivatives at endpoint
-      float k4_vY = invMass * forceY;
-      float k4_posX = temp_vX;
-      float k4_posY = temp_vY;
-
-      Move(dt / 6.0f * (k1_posX + 2 * k2_posX + 2 * k3_posX + k4_posX), dt / 6.0f * (k1_posY + 2 * k2_posY + 2 * k3_posY + k4_posY));
-
-      velocityX += dt / 6.0f * (k1_vX + 2 * k2_vX + 2 * k3_vX + k4_vX);
-      velocityY += dt / 6.0f * (k1_vY + 2 * k2_vY + 2 * k3_vY + k4_vY);
+      velocityX += accelX * dt;
+      velocityY += accelY * dt;
     }
 
     forceX = 0.0f;

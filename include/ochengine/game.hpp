@@ -78,7 +78,7 @@ struct Game {
     window.display();
   }
 
-  void PlayScene(int sceneId, float duration = 0.0f, IntegrationType method = IntegrationType::RK4, bool deterministic = true, bool waitForFocus = false) {
+  void PlayScene(int sceneId, float duration = 0.0f, IntegrationType method = IntegrationType::RK2, bool deterministic = true, bool waitForFocus = false) {
     Scene *scene = scenes.getValue(sceneId);
 
     if (waitForFocus) {
