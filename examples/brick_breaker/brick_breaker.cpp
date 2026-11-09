@@ -1,8 +1,6 @@
 #include "ochengine/game.hpp"
 #include <SFML/Graphics.hpp>
 
-namespace {
-
 struct Brick {
   Rect *object;
   sf::Color color;
@@ -308,8 +306,6 @@ private:
     window.draw(shape);
   }
 };
-
-} // namespace
 
 int main() {
   Game game("Ochengine: Brick Breaker", 800, 600, 120);

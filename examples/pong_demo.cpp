@@ -1,7 +1,5 @@
 #include "ochengine/game.hpp"
 
-namespace {
-
 struct PongScene : Scene {
   bool keyPressed[4];
   bool waitingForServe;
@@ -226,8 +224,6 @@ private:
     return string;
   }
 };
-
-} // namespace
 
 int main() {
   Game game("Pong Demo", 800, 600);

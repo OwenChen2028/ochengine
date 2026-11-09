@@ -1,7 +1,5 @@
 #include "ochengine/game.hpp"
 
-namespace {
-
 struct SimulationScene : Scene {
   SimulationScene() { Reset(); }
 
@@ -33,8 +31,6 @@ private:
     objects.addValue(new Rect(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 800.0f, 0.0f, 810.0f, 600.0f)); // right boundary
   }
 };
-
-} // namespace
 
 int main() {
   Game game("Simulation Demo", 800, 600);
